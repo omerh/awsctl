@@ -13,8 +13,7 @@ WIP: Optionl slack message using `--slack` and setting environment variable `AWS
 ## build
 
 ```bash
-go get github.com/aws/aws-sdk-go
-go get github.com/spf13/cobra
+# Use go modules add the following env var GO111MODULE=on
 go build -ldflags "-s -w"
 ```
 
