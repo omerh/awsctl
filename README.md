@@ -16,6 +16,12 @@ go build -ldflags "-s -w"
 
 ### Example commands
 
+Get all EC2 events from all regions
+
+```bash
+awsctl get ec2 events -r all
+```
+
 List regions
 
 ```bash
