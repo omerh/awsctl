@@ -6,7 +6,9 @@ Tool is built using cobra, for getting started just run `awsctl` and see the exa
 
 To use the tool with dry run just run the command, the really execute add `--yes`
 
-Option output as json using `-o json`
+Optional output as json using `-o json`
+
+WIP: Optionl slack message using `--slack` and setting environment variable `AWSCTL_SLACK_URL`
 
 ## build
 
