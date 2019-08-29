@@ -1,14 +1,52 @@
 # awsctl
 
-This is a small maintanence tool for keeping cloudwatch expiery taht by default are set to Never to 14 days
+This is a small maintanence tool for manageing aws infrastructure easitly with a single binary on a region or all regions at a single command
 
->Most of the time its just forgeting to place the expiery.
->So just keep the dollars in yout pocket
+Tool is built using cobra, for getting started just run `awsctl` and see the examples available commands.
 
-To build
+To use the tool with dry run just run the command, the really execute add `--yes`
+
+## build
 
 ```bash
 go get github.com/aws/aws-sdk-go
 go get github.com/spf13/cobra
 go build -ldflags "-s -w"
 ```
+
+### Example commands
+
+List regions
+
+```bash
+awsctl list regions
+```
+
+List availablity zones in a region
+
+```bash
+awsctl list azs --region us-east-1
+```
+
+Delete all unused EBS in all regions
+
+```bash
+awsctl delete ebs --region all --yes
+```
+
+Set cloudwatch logs with no expirey to 14 days expiry
+
+```bash
+awsctl set cloudwatch --region all --retention 14 --yes
+```
+
+For any missing action please open an issue for a feature request.
+
+### Contributing
+
+Fork, implement, add tests, pull request, get my everlasting thanks and a respectable place here :).
+
+### Copyright
+
+Copyright (c) 2019 Omer Haim, [@omerhaim](http://twitter.com/omerhaim).
+See [LICENSE](LICENSE) for further details.
