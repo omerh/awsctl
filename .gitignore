@@ -1,0 +1,10 @@
+# Binary
+awsctl
+awsctl-*
+
+# Mac stuff
+.DS_Store
+
+# Project
+vendor
+dist
