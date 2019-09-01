@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"gitlab.com/omerh/awsctl/aws/cmd"
+	"github.com/omerh/awsctl/cmd/awsctl/cmd"
 )
 
 func main() {

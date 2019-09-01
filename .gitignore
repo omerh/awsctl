@@ -5,10 +5,6 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# Binary
-awsctl
-awsctl-*
-
 # Mac stuff
 .DS_Store
 
