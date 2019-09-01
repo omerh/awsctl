@@ -9,8 +9,7 @@
 .DS_Store
 
 # binary
-awsctl
-awsctl*
+/awsctl
 
 # Project
 vendor
