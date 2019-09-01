@@ -8,6 +8,10 @@
 # Mac stuff
 .DS_Store
 
+# binary
+awsctl
+awsctl*
+
 # Project
 vendor
 dist
