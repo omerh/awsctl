@@ -24,5 +24,7 @@ var getCmd = &cobra.Command{
 func init() {
 	getCmd.AddCommand(getEc2Cmd)
 	getCmd.AddCommand(getEbsCmd)
+	getCmd.AddCommand(getRegionsCmd)
+	getCmd.AddCommand(getAzsCmd)
 	rootCmd.AddCommand(getCmd)
 }
