@@ -11,7 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/rds"
 )
 
-type rdsSnapshotInfo struct {
+// RdsSnapshotInfo rds snapshot struct
+type RdsSnapshotInfo struct {
 	dbIdentifier         string
 	dbSnapshotIdentifier string
 	snapshotType         string
@@ -80,18 +81,20 @@ func GetAllRdsDBClusters(region string, out string) {
 }
 
 // GetRDSSnapshots get all snapshot for instance(s) or clusters
-func GetRDSSnapshots(resourceName string, rdsType string, region string, out string) {
+func GetRDSSnapshots(resourceName string, rdsType string, region string, out string) []RdsSnapshotInfo {
+	var rdsSnapshotInfoSlice []RdsSnapshotInfo
 	switch rdsType {
 	case "instance":
-		getRdsInstanceSnapshot(resourceName, region, out)
+		rdsSnapshotInfoSlice = getRdsInstanceSnapshot(resourceName, region, out)
 	case "cluster":
-		getRdsDBClusterSnapshot(resourceName, region, out)
+		rdsSnapshotInfoSlice = getRdsDBClusterSnapshot(resourceName, region, out)
 	default:
 		fmt.Println("Error RdsDbType")
 	}
+	return rdsSnapshotInfoSlice
 }
 
-func getRdsDBClusterSnapshot(resourceName string, region string, out string) {
+func getRdsDBClusterSnapshot(resourceName string, region string, out string) []RdsSnapshotInfo {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBClusterSnapshotsInput
@@ -104,24 +107,22 @@ func getRdsDBClusterSnapshot(resourceName string, region string, out string) {
 	}
 
 	rdsSnapshots, _ := svc.DescribeDBClusterSnapshots(input)
-	if out == "json" {
-		outputs.PrintGenericJSONOutput(rdsSnapshots, region)
-	} else {
-		var rdsSnapshotSlice []rdsSnapshotInfo
-		for _, r := range rdsSnapshots.DBClusterSnapshots {
-			rdsSnapshotSlice = append(rdsSnapshotSlice, rdsSnapshotInfo{
-				dbIdentifier:         *r.DBClusterIdentifier,
-				dbSnapshotIdentifier: *r.DBClusterSnapshotIdentifier,
-				snapshotType:         *r.SnapshotType,
-				snapshotCreatedTime:  *r.SnapshotCreateTime,
-				storageEncrypted:     *r.StorageEncrypted,
-			})
-		}
-		printRdsSnapshotInformation(rdsSnapshotSlice, region)
+	var rdsSnapshotSlice []RdsSnapshotInfo
+
+	for _, r := range rdsSnapshots.DBClusterSnapshots {
+		rdsSnapshotSlice = append(rdsSnapshotSlice, RdsSnapshotInfo{
+			dbIdentifier:         *r.DBClusterIdentifier,
+			dbSnapshotIdentifier: *r.DBClusterSnapshotIdentifier,
+			snapshotType:         *r.SnapshotType,
+			snapshotCreatedTime:  *r.SnapshotCreateTime,
+			storageEncrypted:     *r.StorageEncrypted,
+		})
 	}
+	return rdsSnapshotSlice
 }
 
-func printRdsSnapshotInformation(rdsSnapshotInformation []rdsSnapshotInfo, region string) {
+// PrintRdsSnapshotInformation print the needed snapshot information
+func PrintRdsSnapshotInformation(rdsSnapshotInformation []RdsSnapshotInfo, region string) {
 	log.Printf("Running on region: %v", region)
 	if len(rdsSnapshotInformation) > 0 {
 		for _, i := range rdsSnapshotInformation {
@@ -138,7 +139,7 @@ func printRdsSnapshotInformation(rdsSnapshotInformation []rdsSnapshotInfo, regio
 	log.Println("==============================================")
 }
 
-func getRdsInstanceSnapshot(resourceName string, region string, out string) {
+func getRdsInstanceSnapshot(resourceName string, region string, out string) []RdsSnapshotInfo {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBSnapshotsInput
@@ -151,21 +152,18 @@ func getRdsInstanceSnapshot(resourceName string, region string, out string) {
 	}
 
 	rdsSnapshots, _ := svc.DescribeDBSnapshots(input)
-	if out == "json" {
-		outputs.PrintGenericJSONOutput(rdsSnapshots, region)
-	} else {
-		var rdsSnapshotSlice []rdsSnapshotInfo
-		for _, r := range rdsSnapshots.DBSnapshots {
-			rdsSnapshotSlice = append(rdsSnapshotSlice, rdsSnapshotInfo{
-				dbIdentifier:         *r.DBInstanceIdentifier,
-				dbSnapshotIdentifier: *r.DBSnapshotIdentifier,
-				snapshotType:         *r.SnapshotType,
-				snapshotCreatedTime:  *r.SnapshotCreateTime,
-				storageEncrypted:     *r.Encrypted,
-			})
-		}
-		printRdsSnapshotInformation(rdsSnapshotSlice, region)
+	var rdsSnapshotSlice []RdsSnapshotInfo
+
+	for _, r := range rdsSnapshots.DBSnapshots {
+		rdsSnapshotSlice = append(rdsSnapshotSlice, RdsSnapshotInfo{
+			dbIdentifier:         *r.DBInstanceIdentifier,
+			dbSnapshotIdentifier: *r.DBSnapshotIdentifier,
+			snapshotType:         *r.SnapshotType,
+			snapshotCreatedTime:  *r.SnapshotCreateTime,
+			storageEncrypted:     *r.Encrypted,
+		})
 	}
+	return rdsSnapshotSlice
 }
 
 func printRdsClusters(rdsClusters []*rds.DBCluster, region string, out string) {

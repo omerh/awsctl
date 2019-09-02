@@ -20,10 +20,12 @@ var getRdsSnapshots = &cobra.Command{
 		rdsType, _ := cmd.Flags().GetString("type")
 		dbName, _ := cmd.Flags().GetString("name")
 
+		var rdsSnapshotsInfoSlice []helper.RdsSnapshotInfo
 		if region == "all" {
 			awsRegions, _ := helper.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				helper.GetRDSSnapshots(dbName, rdsType, r, out)
+				rdsSnapshotsInfoSlice = helper.GetRDSSnapshots(dbName, rdsType, r, out)
+				helper.PrintRdsSnapshotInformation(rdsSnapshotsInfoSlice, r)
 			}
 			return
 		}
@@ -32,7 +34,8 @@ var getRdsSnapshots = &cobra.Command{
 			region = helper.GetDefaultAwsRegion()
 		}
 
-		helper.GetRDSSnapshots(dbName, rdsType, region, out)
+		rdsSnapshotsInfoSlice = helper.GetRDSSnapshots(dbName, rdsType, region, out)
+		helper.PrintRdsSnapshotInformation(rdsSnapshotsInfoSlice, region)
 	},
 }
 
