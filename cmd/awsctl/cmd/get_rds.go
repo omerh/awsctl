@@ -5,9 +5,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var getRdsCmdExmaple = `
+  awsctl get rds -t instance -r us-east-1
+  awsctl get rds -t cluster -r us-east-1
+`
+
 var getRdsCmd = &cobra.Command{
-	Use:   "rds",
-	Short: "Get RDS Instaces or clusters",
+	Use:     "rds",
+	Short:   "Get RDS Instaces or clusters",
+	Example: getRdsCmdExmaple,
 	Run: func(cmd *cobra.Command, Args []string) {
 		region, _ := cmd.Flags().GetString("region")
 		out, _ := cmd.Flags().GetString("out")
@@ -27,8 +33,4 @@ var getRdsCmd = &cobra.Command{
 
 		helper.GetAllRds(region, rdsType, out)
 	},
-}
-
-func init() {
-	getRdsCmd.Flags().StringP("type", "t", "instance", "instance/cluster")
 }

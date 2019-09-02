@@ -3,11 +3,21 @@ package helper
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/omerh/awsctl/pkg/outputs"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/rds"
 )
+
+type rdsSnapshotInfo struct {
+	dbIdentifier         string
+	dbSnapshotIdentifier string
+	snapshotType         string
+	snapshotCreatedTime  time.Time
+	storageEncrypted     bool
+}
 
 // GetAllRds from a region
 func GetAllRds(region string, rdsType string, out string) {
@@ -44,7 +54,7 @@ func printRdsInstances(rdsInstances []*rds.DBInstance, region string, out string
 				if rds.DBClusterIdentifier != nil {
 					log.Printf("RDS is a part of a cluster %v", *rds.DBClusterIdentifier)
 				}
-				log.Printf("RDS Storage: %vGB of %v encryption set to %v", *rds.AllocatedStorage, *rds.StorageType, *rds.StorageEncrypted)
+				log.Printf("RDS Storage: %vGB, Storage type: %v, Encryption set to %v", *rds.AllocatedStorage, *rds.StorageType, *rds.StorageEncrypted)
 				if rds.Endpoint != nil {
 					log.Printf("RDS Network: %v:%v Running in %v ", *rds.Endpoint.Address, *rds.Endpoint.Port, *rds.AvailabilityZone)
 				}
@@ -70,13 +80,92 @@ func GetAllRdsDBClusters(region string, out string) {
 }
 
 // GetRDSSnapshots get all snapshot for instance(s) or clusters
-func GetRDSSnapshots(rdsInstance string, rdsType string, region string, out string) {
+func GetRDSSnapshots(resourceName string, rdsType string, region string, out string) {
+	switch rdsType {
+	case "instance":
+		getRdsInstanceSnapshot(resourceName, region, out)
+	case "cluster":
+		getRdsDBClusterSnapshot(resourceName, region, out)
+	default:
+		fmt.Println("Error RdsDbType")
+	}
+}
+
+func getRdsDBClusterSnapshot(resourceName string, region string, out string) {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
-	input := &rds.DescribeDBSnapshotsInput{}
+	var input *rds.DescribeDBClusterSnapshotsInput
+	if resourceName != "" {
+		input = &rds.DescribeDBClusterSnapshotsInput{
+			DBClusterIdentifier: aws.String(resourceName),
+		}
+	} else {
+		input = &rds.DescribeDBClusterSnapshotsInput{}
+	}
+
+	rdsSnapshots, _ := svc.DescribeDBClusterSnapshots(input)
+	if out == "json" {
+		outputs.PrintGenericJSONOutput(rdsSnapshots, region)
+	} else {
+		var rdsSnapshotSlice []rdsSnapshotInfo
+		for _, r := range rdsSnapshots.DBClusterSnapshots {
+			rdsSnapshotSlice = append(rdsSnapshotSlice, rdsSnapshotInfo{
+				dbIdentifier:         *r.DBClusterIdentifier,
+				dbSnapshotIdentifier: *r.DBClusterSnapshotIdentifier,
+				snapshotType:         *r.SnapshotType,
+				snapshotCreatedTime:  *r.SnapshotCreateTime,
+				storageEncrypted:     *r.StorageEncrypted,
+			})
+		}
+		printRdsSnapshotInformation(rdsSnapshotSlice, region)
+	}
+}
+
+func printRdsSnapshotInformation(rdsSnapshotInformation []rdsSnapshotInfo, region string) {
+	log.Printf("Running on region: %v", region)
+	if len(rdsSnapshotInformation) > 0 {
+		for _, i := range rdsSnapshotInformation {
+			log.Printf("RDS Identifier: %v", i.dbIdentifier)
+			log.Printf("RDS Snapshot Identifier: %v", i.dbSnapshotIdentifier)
+			log.Printf("RDS Snapshot Type: %v", i.snapshotType)
+			log.Printf("RDS Snapshot created date: %v", i.snapshotCreatedTime)
+			log.Printf("RDS Snapshot increption set to %v", i.storageEncrypted)
+			log.Println()
+		}
+	} else {
+		log.Println("No RDS Snapshots in region")
+	}
+	log.Println("==============================================")
+}
+
+func getRdsInstanceSnapshot(resourceName string, region string, out string) {
+	awsSession, _ := InitAwsSession(region)
+	svc := rds.New(awsSession)
+	var input *rds.DescribeDBSnapshotsInput
+	if resourceName != "" {
+		input = &rds.DescribeDBSnapshotsInput{
+			DBInstanceIdentifier: aws.String(resourceName),
+		}
+	} else {
+		input = &rds.DescribeDBSnapshotsInput{}
+	}
 
 	rdsSnapshots, _ := svc.DescribeDBSnapshots(input)
-	fmt.Println(rdsSnapshots)
+	if out == "json" {
+		outputs.PrintGenericJSONOutput(rdsSnapshots, region)
+	} else {
+		var rdsSnapshotSlice []rdsSnapshotInfo
+		for _, r := range rdsSnapshots.DBSnapshots {
+			rdsSnapshotSlice = append(rdsSnapshotSlice, rdsSnapshotInfo{
+				dbIdentifier:         *r.DBInstanceIdentifier,
+				dbSnapshotIdentifier: *r.DBSnapshotIdentifier,
+				snapshotType:         *r.SnapshotType,
+				snapshotCreatedTime:  *r.SnapshotCreateTime,
+				storageEncrypted:     *r.Encrypted,
+			})
+		}
+		printRdsSnapshotInformation(rdsSnapshotSlice, region)
+	}
 }
 
 func printRdsClusters(rdsClusters []*rds.DBCluster, region string, out string) {
@@ -87,6 +176,7 @@ func printRdsClusters(rdsClusters []*rds.DBCluster, region string, out string) {
 		log.Printf("Running on region: %v", region)
 		if len(rdsClusters) > 0 {
 			for _, rds := range rdsClusters {
+				fmt.Println("In cluster print")
 				log.Printf("RDS Identifier: %v ", *rds.DBClusterIdentifier)
 				log.Printf("RDS Storage: %vGB encryption set to %v", *rds.AllocatedStorage, *rds.StorageEncrypted)
 				if rds.Endpoint != nil {

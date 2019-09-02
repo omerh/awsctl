@@ -39,6 +39,7 @@ func init() {
 	rootCmd.PersistentFlags().StringP("region", "r", "", "aws region/all")
 	rootCmd.PersistentFlags().StringP("out", "o", "text", "Output text/json")
 	rootCmd.PersistentFlags().Bool("slack", false, "send custom webhook slack message for monitor")
+	rootCmd.PersistentFlags().StringP("type", "t", "instance", "instance/cluster")
 }
 
 // Execute using cobra command
