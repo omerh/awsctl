@@ -46,17 +46,10 @@ func GetAllAwsRegions() ([]string, error) {
 func GetDefaultAwsRegion() (region string) {
 	region = os.Getenv("AWS_REGION")
 	if region == "" {
-		log.Println("No region is set in environment, please set AWS_REGION or pass --region")
+		log.Println("No region is set in environment, please set AWS_REGION environment variable or pass --region")
 		os.Exit(1)
 	} else {
 		log.Printf("Using default region %s from environment variable AWS_REGION", region)
 	}
 	return region
 }
-
-// GetWorkingRegions retrive passed region argument
-//
-// func GetWorkingRegions(region string) (workregions []string) {
-
-// 	return workregions
-// }
