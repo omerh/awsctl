@@ -36,7 +36,7 @@ var rootCmd = &cobra.Command{
 
 // Persistent flags goes here
 func init() {
-	rootCmd.PersistentFlags().StringP("region", "r", "", "aws region (all)")
+	rootCmd.PersistentFlags().StringP("region", "r", "", "aws region/all")
 	rootCmd.PersistentFlags().StringP("out", "o", "text", "Output text/json")
 	rootCmd.PersistentFlags().Bool("slack", false, "send custom webhook slack message for monitor")
 }

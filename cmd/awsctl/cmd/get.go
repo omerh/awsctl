@@ -27,5 +27,6 @@ func init() {
 	getCmd.AddCommand(getRegionsCmd)
 	getCmd.AddCommand(getAzsCmd)
 	getCmd.AddCommand(getRdsCmd)
+	getCmd.AddCommand(getRdsSnapshots)
 	rootCmd.AddCommand(getCmd)
 }
