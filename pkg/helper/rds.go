@@ -85,16 +85,24 @@ func GetRDSSnapshots(resourceName string, rdsType string, region string, out str
 	var rdsSnapshotInfoSlice []RdsSnapshotInfo
 	switch rdsType {
 	case "instance":
-		rdsSnapshotInfoSlice = getRdsInstanceSnapshot(resourceName, region, out)
+		var response []*rds.DBSnapshot
+		rdsSnapshotInfoSlice, response = getRdsInstanceSnapshot(resourceName, region, out)
+		if out == "json" {
+			outputs.PrintGenericJSONOutput(response, region)
+		}
 	case "cluster":
-		rdsSnapshotInfoSlice = getRdsDBClusterSnapshot(resourceName, region, out)
+		var response []*rds.DBClusterSnapshot
+		rdsSnapshotInfoSlice, response = getRdsDBClusterSnapshot(resourceName, region, out)
+		if out == "json" {
+			outputs.PrintGenericJSONOutput(response, region)
+		}
 	default:
 		fmt.Println("Error RdsDbType")
 	}
 	return rdsSnapshotInfoSlice
 }
 
-func getRdsDBClusterSnapshot(resourceName string, region string, out string) []RdsSnapshotInfo {
+func getRdsDBClusterSnapshot(resourceName string, region string, out string) ([]RdsSnapshotInfo, []*rds.DBClusterSnapshot) {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBClusterSnapshotsInput
@@ -118,19 +126,19 @@ func getRdsDBClusterSnapshot(resourceName string, region string, out string) []R
 			storageEncrypted:     *r.StorageEncrypted,
 		})
 	}
-	return rdsSnapshotSlice
+	return rdsSnapshotSlice, rdsSnapshots.DBClusterSnapshots
 }
 
 // PrintRdsSnapshotInformation print the needed snapshot information
-func PrintRdsSnapshotInformation(rdsSnapshotInformation []RdsSnapshotInfo, region string) {
+func PrintRdsSnapshotInformation(rdsSnapshotInformation []RdsSnapshotInfo, region string, out string) {
 	log.Printf("Running on region: %v", region)
 	if len(rdsSnapshotInformation) > 0 {
 		for _, i := range rdsSnapshotInformation {
 			log.Printf("RDS Identifier: %v", i.dbIdentifier)
-			log.Printf("RDS Snapshot Identifier: %v", i.dbSnapshotIdentifier)
-			log.Printf("RDS Snapshot Type: %v", i.snapshotType)
+			log.Printf("RDS Snapshot identifier: %v", i.dbSnapshotIdentifier)
+			log.Printf("RDS Snapshot type: %v", i.snapshotType)
 			log.Printf("RDS Snapshot created date: %v", i.snapshotCreatedTime)
-			log.Printf("RDS Snapshot increption set to %v", i.storageEncrypted)
+			log.Printf("RDS Snapshot encryption set to %v", i.storageEncrypted)
 			log.Println()
 		}
 	} else {
@@ -139,7 +147,7 @@ func PrintRdsSnapshotInformation(rdsSnapshotInformation []RdsSnapshotInfo, regio
 	log.Println("==============================================")
 }
 
-func getRdsInstanceSnapshot(resourceName string, region string, out string) []RdsSnapshotInfo {
+func getRdsInstanceSnapshot(resourceName string, region string, out string) ([]RdsSnapshotInfo, []*rds.DBSnapshot) {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBSnapshotsInput
@@ -163,7 +171,7 @@ func getRdsInstanceSnapshot(resourceName string, region string, out string) []Rd
 			storageEncrypted:     *r.Encrypted,
 		})
 	}
-	return rdsSnapshotSlice
+	return rdsSnapshotSlice, rdsSnapshots.DBSnapshots
 }
 
 func printRdsClusters(rdsClusters []*rds.DBCluster, region string, out string) {
@@ -195,5 +203,53 @@ func printRdsClusters(rdsClusters []*rds.DBCluster, region string, out string) {
 			log.Println("No RDS Clusters in region")
 		}
 		log.Println("==============================================")
+	}
+}
+
+// DeleteRdsSnapshots for deleting snapshots by date
+func DeleteRdsSnapshots(rdsSnapshots []RdsSnapshotInfo, older int, region string, apply bool, rdsType string, out string) {
+	log.Printf("Running on region: %v", region)
+	log.Printf("Deleting snapshots older than %v days", older)
+
+	now := time.Now()
+	deleteDate := now.AddDate(0, 0, -(older))
+
+	for _, s := range rdsSnapshots {
+		if s.snapshotCreatedTime.Before(deleteDate) {
+			log.Printf("Deleting %v that was created at %v for db %v", s.dbSnapshotIdentifier, s.snapshotCreatedTime, s.dbIdentifier)
+			if apply == true {
+				deleteSnapshot(s.dbSnapshotIdentifier, region, rdsType)
+			} else {
+				log.Println("Add -y/--yes to confirm delete")
+			}
+		}
+	}
+	log.Println("==============================================")
+}
+
+func deleteSnapshot(dbSnapshotIdentifier string, region string, rdsType string) {
+	awsSession, _ := InitAwsSession(region)
+	svc := rds.New(awsSession)
+	switch rdsType {
+	case "instance":
+		input := &rds.DeleteDBSnapshotInput{
+			DBSnapshotIdentifier: aws.String(dbSnapshotIdentifier),
+		}
+		_, err := svc.DeleteDBSnapshot(input)
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.Printf("Snapshot %v was deleted", dbSnapshotIdentifier)
+		}
+	case "cluster":
+		input := &rds.DeleteDBClusterSnapshotInput{
+			DBClusterSnapshotIdentifier: aws.String(dbSnapshotIdentifier),
+		}
+		_, err := svc.DeleteDBClusterSnapshot(input)
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.Printf("Snapshot %v was deleted", dbSnapshotIdentifier)
+		}
 	}
 }

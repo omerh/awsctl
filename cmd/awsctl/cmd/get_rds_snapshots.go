@@ -20,12 +20,13 @@ var getRdsSnapshots = &cobra.Command{
 		rdsType, _ := cmd.Flags().GetString("type")
 		dbName, _ := cmd.Flags().GetString("name")
 
-		var rdsSnapshotsInfoSlice []helper.RdsSnapshotInfo
 		if region == "all" {
 			awsRegions, _ := helper.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				rdsSnapshotsInfoSlice = helper.GetRDSSnapshots(dbName, rdsType, r, out)
-				helper.PrintRdsSnapshotInformation(rdsSnapshotsInfoSlice, r)
+				rdsSnapshotInfoSlice := helper.GetRDSSnapshots(dbName, rdsType, r, out)
+				if out != "json" {
+					helper.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
+				}
 			}
 			return
 		}
@@ -34,8 +35,10 @@ var getRdsSnapshots = &cobra.Command{
 			region = helper.GetDefaultAwsRegion()
 		}
 
-		rdsSnapshotsInfoSlice = helper.GetRDSSnapshots(dbName, rdsType, region, out)
-		helper.PrintRdsSnapshotInformation(rdsSnapshotsInfoSlice, region)
+		rdsSnapshotInfoSlice := helper.GetRDSSnapshots(dbName, rdsType, region, out)
+		if out != "json" {
+			helper.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
+		}
 	},
 }
 
