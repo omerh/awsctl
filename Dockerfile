@@ -1,17 +1,15 @@
-FROM golang:1.11.2 AS Builder
+FROM golang:1.13.0 AS Builder
 
 WORKDIR /go/src/app
-COPY main.go /go/src/app
-
-RUN go get github.com/aws/aws-sdk-go
+COPY . /go/src/app
 
 RUN CGO_ENABLED=0 \
     GOOS=linux \
-    go build -ldflags '-w -extldflags "-static"'
+    go build -ldflags '-w -extldflags "-static"' -o awsctl
 
 FROM alpine:3.8 AS Runner
 
 RUN apk add --update ca-certificates
-COPY  --from=Builder /go/src/app/app /usr/local/bin/app
+COPY  --from=Builder /go/src/app/awsctl /usr/local/bin/awsctl
 
-CMD [ "app" ]
+CMD [ "awsctl" ]

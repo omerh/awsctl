@@ -1,0 +1,18 @@
+# vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Mac stuff
+.DS_Store
+
+# binary
+/awsctl
+
+# Project
+vendor
+dist
+
+/.git
