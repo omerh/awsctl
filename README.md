@@ -49,6 +49,14 @@ Set cloudwatch logs with no expirey to 14 days expiry
 awsctl set cloudwatch --region all --retention 14 --yes
 ```
 
+Manage RDS insatnces or clusters
+
+```bash
+awsctl get rds --region all  --type instance #or cluster
+awsctl get rdssnapshots --region all  --type instance --name db01
+awsctl delete rdssnapshots --name db01 --type instance --region all --older 14 --yes
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing
