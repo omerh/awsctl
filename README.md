@@ -2,7 +2,7 @@
 
 This is a small maintanence tool for managing aws infrastructure easily with a single binary on a region or all regions at a single command
 
-Tool is built using cobra, for getting started just run `awsctl` and see the examples available commands.
+Tool is built using cobra, for getting started just run `awsctl` and see the example commands available.
 
 To use the tool with dry run just run the command, the really execute add `--yes`
 
