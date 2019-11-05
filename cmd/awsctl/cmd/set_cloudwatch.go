@@ -35,10 +35,6 @@ var cmdCloudwatch = &cobra.Command{
 	},
 }
 
-func init() {
-	cmdCloudwatch.Flags().Int64("retention", 14, "Setting the retention policy in days")
-}
-
 func locateNeverExpireCloudwatchlogs(region string, retention int64, apply bool) {
 	log.Printf("Running on region: %v", region)
 	awsSession, _ := helper.InitAwsSession(region)

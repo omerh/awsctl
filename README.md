@@ -57,6 +57,12 @@ awsctl get rdssnapshots --region all  --type instance --name db01
 awsctl delete rdssnapshots --name db01 --type instance --region all --older 14 --yes
 ```
 
+ECR Opertaion for setting lifecycle policy to untagged repositories
+
+```bash
+awsctl set ecrregistrypolicy -r eu-west-2 --retention 7
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing
