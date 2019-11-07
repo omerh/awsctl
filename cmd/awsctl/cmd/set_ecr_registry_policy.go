@@ -44,7 +44,7 @@ func checkAndSetEcrSliceLifecyclePolicy(repos []*ecr.Repository, retention int, 
 			if apply == true {
 				helper.SetEcrRepositoryLifecyclePolicy(*repo.RepositoryName, retention, region)
 			} else {
-				log.Printf("Will set retention to %v for %v days, pass --apply to execute command", *repo.RepositoryName, retention)
+				log.Printf("Will set retention to %v for %v days, pass --yes to execute the command", *repo.RepositoryName, retention)
 			}
 		}
 	}
