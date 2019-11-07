@@ -16,7 +16,7 @@ var setEcrScanOnPushcmd = &cobra.Command{
 		apply, _ := cmd.Flags().GetBool("yes")
 		region, _ := cmd.Flags().GetString("region")
 		scanOnPush, _ := cmd.Flags().GetBool("scan")
-
+		fmt.Println(scanOnPush)
 		if region == "all" {
 			awsRegions, _ := helper.GetAllAwsRegions()
 			for _, r := range awsRegions {
@@ -47,5 +47,5 @@ func setEcrRepositoryConfigurationScanOnPush(repos []*ecr.Repository, scanOnPush
 }
 
 func init() {
-	setEcrScanOnPushcmd.Flags().Bool("scan", true, "Set repository configuration for ScanOnPush")
+	setEcrScanOnPushcmd.Flags().String("scan", "true", "Set repository configuration for ScanOnPush")
 }
