@@ -27,6 +27,7 @@ func init() {
 	rootCmd.AddCommand(setCmd)
 	setCmd.AddCommand(cmdCloudwatch)
 	setCmd.AddCommand(setEcrRegistryPolicy)
+	setCmd.AddCommand(setEcrScanOnPushcmd)
 	setCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to execute")
 	setCmd.PersistentFlags().Int("retention", 14, "Retention in days")
 }

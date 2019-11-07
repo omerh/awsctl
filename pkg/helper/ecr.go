@@ -53,7 +53,7 @@ func SetEcrRepositoryLifecyclePolicy(repositoryName string, days int, region str
 	log.Printf("Setting lifecycle policy to %v for %v days", repositoryName, days)
 	awsSession, _ := InitAwsSession(region)
 	svc := ecr.New(awsSession)
-	
+
 	// tagStatus is hardcoded to prevent mistakes like deleting latest that is not maintained
 	lifecyclePolicyText := fmt.Sprintf(`{
 		"rules": [
@@ -83,5 +83,23 @@ func SetEcrRepositoryLifecyclePolicy(repositoryName string, days int, region str
 	if err != nil {
 		log.Printf("There was a problem setting lifecycle policy to %v", repositoryName)
 		log.Println(err)
+	}
+}
+
+// SetEcrRepoImageScanOnPush set image scan on push configuration on ecr repository
+func SetEcrRepoImageScanOnPush(repositoryName string, region string, scanOnPush bool) {
+	awsSession, _ := InitAwsSession(region)
+	svc := ecr.New(awsSession)
+	input := &ecr.PutImageScanningConfigurationInput{
+		RepositoryName: aws.String(repositoryName),
+		ImageScanningConfiguration: &ecr.ImageScanningConfiguration{
+			ScanOnPush: aws.Bool(scanOnPush),
+		},
+	}
+	_, err := svc.PutImageScanningConfiguration(input)
+	if err != nil {
+		log.Printf("There was a problem setting repository %v to ScanOnPush %v", repositoryName, scanOnPush)
+	} else {
+		log.Printf("scanOnPush for repository %v was set to %v", repositoryName, scanOnPush)
 	}
 }
