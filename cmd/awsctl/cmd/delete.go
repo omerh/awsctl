@@ -30,5 +30,7 @@ func init() {
 	deleteCmd.AddCommand(cmdEbs)
 	deleteCmd.AddCommand(cmdEip)
 	deleteCmd.AddCommand(deleteRdsSnapshots)
+	deleteCmd.AddCommand(cmdDeleteEcrImages)
+	deleteCmd.AddCommand(deleteAcmCertCmd)
 	deleteCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to execute")
 }
