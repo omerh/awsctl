@@ -103,3 +103,21 @@ func SetEcrRepoImageScanOnPush(repositoryName string, region string, scanOnPush 
 		log.Printf("scanOnPush for repository %v was set to %v", repositoryName, scanOnPush)
 	}
 }
+
+// EcrDeleteOldImageBuildsAndKeep delete old images and keep only n last images
+func EcrDeleteOldImageBuildsAndKeep(repositoryName string, region string, imagesToKeep int) {
+	awsSession, _ := InitAwsSession(region)
+	svc := ecr.New(awsSession)
+	input := &ecr.ListImagesInput{
+		RepositoryName: aws.String(repositoryName),
+	}
+	images, err := svc.ListImages(input)
+	if err != nil {
+		log.Printf("Error: %v", err)
+		return
+	}
+	// for _, i := range images {
+	// 	fmt.Println(i)
+	// }
+	fmt.Println(images)
+}

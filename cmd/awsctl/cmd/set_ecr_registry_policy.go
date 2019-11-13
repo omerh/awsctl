@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var setEcrRegistryPolicy = &cobra.Command{
+var setEcrRegistryPolicyCmd = &cobra.Command{
 	Use:   "ecrregistrypolicy",
 	Short: "Set ECR Registry policy to untagged images",
 	Run: func(cmd *cobra.Command, args []string) {

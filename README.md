@@ -63,6 +63,13 @@ ECR Opertaion for setting lifecycle policy to untagged repositories
 awsctl set ecrregistrypolicy -r eu-west-2 --retention 7
 ```
 
+ECR Repository configuration to scanOnPush repository for vulnerabilities
+
+```bash
+awsctl set ecrscanonpush --region eu-west-1 --scan true  --yes
+awsctl set ecrscanonpush --region all --scan true  --yes
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing
