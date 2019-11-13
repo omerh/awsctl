@@ -23,7 +23,7 @@ func GetECRRepositories(region string) []*ecr.Repository {
 		input := &ecr.DescribeRepositoriesInput{
 			NextToken: result.NextToken,
 		}
-		result, _ := svc.DescribeRepositories(input)
+		result, _ = svc.DescribeRepositories(input)
 		for _, registry := range result.Repositories {
 			registeriesSlice = append(registeriesSlice, registry)
 		}

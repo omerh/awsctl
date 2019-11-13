@@ -30,7 +30,7 @@ func GetAcmCertificates(region string) []*acm.CertificateSummary {
 		input := &acm.ListCertificatesInput{
 			NextToken: result.NextToken,
 		}
-		result, _ := svc.ListCertificates(input)
+		result, _ = svc.ListCertificates(input)
 		for _, certificate := range result.CertificateSummaryList {
 			certificateSlice = append(certificateSlice, certificate)
 		}
