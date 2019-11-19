@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/omerh/awsctl/pkg/helper"
 	"github.com/spf13/cobra"
 )
@@ -31,9 +29,12 @@ var getAcmCertCmd = &cobra.Command{
 }
 
 func getCertifcateInformation(region string) {
+	// Get all certificates
 	certificateList := helper.GetAcmCertificates(region)
+
+	// Get each certificate information
 	for _, certificate := range certificateList {
-		t := helper.DescribeAcmCertificate(region, *certificate.CertificateArn)
-		fmt.Println(*t.Certificate.DomainName)
+		certificateInfo := helper.DescribeAcmCertificate(region, *certificate.CertificateArn)
+		helper.CheckCertificateStatus(certificateInfo, region)
 	}
 }

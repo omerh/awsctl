@@ -3,9 +3,13 @@ package helper
 import (
 	"fmt"
 	"log"
+	"net"
+	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/acm"
+	"golang.org/x/net/publicsuffix"
 )
 
 type acmCertificate struct {
@@ -46,31 +50,75 @@ func DescribeAcmCertificate(region string, arnCertificate string) *acm.DescribeC
 	input := &acm.DescribeCertificateInput{
 		CertificateArn: aws.String(arnCertificate),
 	}
-	certificate, err := svc.DescribeCertificate(input)
+	certificateInfo, err := svc.DescribeCertificate(input)
 	if err != nil {
 		log.Println(err)
 	}
-	// today := time.Now()
-	// log.Printf("Checking certificate %v for domain %v\n", *certificate.Certificate.CertificateArn, *certificate.Certificate.DomainName)
+	return certificateInfo
+}
 
-	// // Check if domain is expired
-	// if certificate.Certificate.NotAfter.Sub(today) <= 0 {
-	// 	log.Printf("Domain is expired please renew with %v!!!", *certificate.Certificate.DomainValidationOptions[0].ValidationMethod)
-	// } else {
-	// 	// Domain is valid
-	// }
-	// // Check if the certificate was validated
-	// if *certificate.Certificate.DomainValidationOptions[0].ValidationStatus == "SUCCESS" {
-	// 	fmt.Println(*certificate.Certificate.DomainValidationOptions[0].ValidationMethod)
-	// 	// Check if certificate is being used by any amazon resource (cloudfront or loadbalancer)
-	// 	if len(certificate.Certificate.InUseBy) > 0 {
-	// 		diff := certificate.Certificate.NotAfter.Sub(today)
-	// 		log.Printf("life span is %v\n", diff)
-	// 		log.Printf("expiring at %v and is being used\n", certificate.Certificate.NotAfter)
-	// 	}
-	// }
+// CheckCertificateStatus checking certificate status
+func CheckCertificateStatus(certificate *acm.DescribeCertificateOutput, region string) {
+	today := time.Now()
+	if certificate.Certificate.NotAfter.Sub(today) < 0 {
+		// certificate expired
+		log.Printf("Certificate for %v (%v) expired at %v !!\n", *certificate.Certificate.DomainName, *certificate.Certificate.CertificateArn, *certificate.Certificate.NotAfter)
+		analyzeCertificate(certificate, region)
+		fmt.Println("=====================================================================================================")
+	} else if certificate.Certificate.NotAfter.Sub(today).Hours() < 168 {
+		// certificate is about to expired in less than 1 week
+		log.Printf("Certificate for %v (%v) is about to expire at %v\n", *certificate.Certificate.DomainName, *certificate.Certificate.CertificateArn, *certificate.Certificate.NotAfter)
+		analyzeCertificate(certificate, region)
+		fmt.Println("=====================================================================================================")
+	} else if certificate.Certificate.NotAfter.Sub(today).Hours() < 720 {
+		// certificate is about to expired in less than 30 days
+		log.Printf("Certificate for %v (%v) is about to expire at %v\n", *certificate.Certificate.DomainName, *certificate.Certificate.CertificateArn, *certificate.Certificate.NotAfter)
+		fmt.Println("=====================================================================================================")
+	}
+}
 
-	return certificate
+func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region string) {
+	log.Printf("Analyzing certificate %v (%v)\n", *certificate.Certificate.DomainName, *certificate.Certificate.CertificateArn)
+	// Check if domain is being used
+	if len(certificate.Certificate.InUseBy) == 0 {
+		log.Printf("Certificate %v is not being used and can be deleted, run awsctl delete certificate to delete it\n", *certificate.Certificate.CertificateArn)
+		return
+	}
+
+	// Check validation methud
+	if *certificate.Certificate.DomainValidationOptions[0].ValidationMethod == "EMAIL" {
+		awsSession, _ := InitAwsSession(region)
+		svc := acm.New(awsSession)
+		input := &acm.ResendValidationEmailInput{
+			CertificateArn:   aws.String(*certificate.Certificate.CertificateArn),
+			Domain:           aws.String(*certificate.Certificate.DomainName),
+			ValidationDomain: aws.String(*certificate.Certificate.DomainName),
+		}
+		_, err := svc.ResendValidationEmail(input)
+		if err != nil {
+			// log.Println(err)
+			return
+		}
+		log.Printf("Certificate %v was issued using email validation, please check the email(s) %v for renewal link", *certificate.Certificate.CertificateArn, &certificate.Certificate.DomainValidationOptions[0].ValidationEmails)
+	} else {
+		// Validation is DNS
+		log.Printf("Validation method %v", *certificate.Certificate.DomainValidationOptions[0].ValidationMethod)
+		url := strings.TrimSuffix(*certificate.Certificate.DomainValidationOptions[0].ResourceRecord.Name, ".")
+		value := strings.TrimSuffix(*certificate.Certificate.DomainValidationOptions[0].ResourceRecord.Value, ".")
+		domain, _ := publicsuffix.EffectiveTLDPlusOne(url)
+		log.Printf("Checking hosted zone for %v", domain)
+
+		// Check if dns recored resolves
+		cname, err := net.LookupCNAME(url)
+		if err != nil {
+			log.Printf("AWS Certificate CNAME %v does not resolves", cname)
+			log.Println(err)
+		} else if cname == value {
+			log.Printf("CNAME resolves ok, check aws console")
+		} else if cname != value {
+			log.Printf("CNAME %v resolves to the wrong recored %v instead of %v", url, cname, value)
+		}
+	}
 }
 
 // DeleteUnusedAcmCertificates deletes all unused certificate in a region
