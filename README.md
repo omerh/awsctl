@@ -70,6 +70,13 @@ awsctl set ecrscanonpush --region eu-west-1 --scan true  --yes
 awsctl set ecrscanonpush --region all --scan true  --yes
 ```
 
+ACM Certificates
+
+```bash
+awsctl get certificates --region ue-east-1    # Get all expiring and expired certificates in region or all regions, for all expiring certificates it analyses why aren't the certificates being renewed automatically
+awsctl delete certificates --region all --yes # Delete all unused certificates from the account
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing

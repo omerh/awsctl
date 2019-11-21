@@ -96,7 +96,7 @@ func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region strin
 		}
 		_, err := svc.ResendValidationEmail(input)
 		if err != nil {
-			// log.Println(err)
+			log.Println(err)
 			return
 		}
 		log.Printf("Certificate %v was issued using email validation, please check the email(s) %v for renewal link", *certificate.Certificate.CertificateArn, &certificate.Certificate.DomainValidationOptions[0].ValidationEmails)
@@ -106,17 +106,37 @@ func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region strin
 		url := strings.TrimSuffix(*certificate.Certificate.DomainValidationOptions[0].ResourceRecord.Name, ".")
 		value := strings.TrimSuffix(*certificate.Certificate.DomainValidationOptions[0].ResourceRecord.Value, ".")
 		domain, _ := publicsuffix.EffectiveTLDPlusOne(url)
-		log.Printf("Checking hosted zone for %v", domain)
+
+		// Check if domain is configured in aws
+		hostedZoneID, domainExists := GetDomainHostedZoneID(domain, region)
+		var recordConfigured bool
+		if domainExists {
+			// Check if certificate DNS record exists in route53
+			recordConfigured = CheckIfRecoredSetValueInRoute53(url, value, hostedZoneID, region)
+		}
 
 		// Check if dns recored resolves
 		cname, err := net.LookupCNAME(url)
 		if err != nil {
-			log.Printf("AWS Certificate CNAME %v does not resolves", cname)
+			if recordConfigured == true {
+				log.Printf("AWS Certificate CNAME %v does not resolves, but configured in route53, check your registrar", url)
+			} else {
+				log.Printf("AWS Certificate CNAME %v does not resolves and setup ok in route53, verify that domain is in your posetion and NS are pointing to AWS route53", url)
+			}
 			log.Println(err)
 		} else if cname == value {
-			log.Printf("CNAME resolves ok, check aws console")
+			if recordConfigured == true {
+				log.Printf("CNAME resolves ok and SSL recored setup correct, check aws console")
+			} else {
+				log.Println("CNAME resolves ok, domain is not in route53, check with domain registrar")
+			}
 		} else if cname != value {
-			log.Printf("CNAME %v resolves to the wrong recored %v instead of %v", url, cname, value)
+			if recordConfigured == true {
+				log.Printf("CNAME %v resolves to the wrong recored %v instead of %v", url, cname, value)
+			} else {
+				log.Printf("CNAME %v resolves to the wrong recored %v instead of %v, but not in route53. Fix record in your registrar", url, cname, value)
+			}
+
 		}
 	}
 }
