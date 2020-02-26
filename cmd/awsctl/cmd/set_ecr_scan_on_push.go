@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -18,18 +18,18 @@ var setEcrScanOnPushcmd = &cobra.Command{
 		scanOnPush, _ := cmd.Flags().GetBool("scan")
 		fmt.Println(scanOnPush)
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				repos := helper.GetECRRepositories(r)
+				repos := helpers.GetECRRepositories(r)
 				setEcrRepositoryConfigurationScanOnPush(repos, scanOnPush, r, apply)
 			}
 			return
 		}
 		// No region arg passed
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
-		repos := helper.GetECRRepositories(region)
+		repos := helpers.GetECRRepositories(region)
 		setEcrRepositoryConfigurationScanOnPush(repos, scanOnPush, region, apply)
 	},
 }
@@ -37,7 +37,7 @@ var setEcrScanOnPushcmd = &cobra.Command{
 func setEcrRepositoryConfigurationScanOnPush(repos []*ecr.Repository, scanOnPush bool, region string, apply bool) {
 	for _, repo := range repos {
 		if apply == true {
-			helper.SetEcrRepoImageScanOnPush(*repo.RepositoryName, region, scanOnPush)
+			helpers.SetEcrRepoImageScanOnPush(*repo.RepositoryName, region, scanOnPush)
 		} else {
 			log.Printf("will set scanOnPush to %v for repository %v, pass --yes to execute the command", scanOnPush, *repo.RepositoryName)
 		}

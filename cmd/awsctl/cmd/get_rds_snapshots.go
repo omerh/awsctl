@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -21,27 +21,28 @@ var getRdsSnapshots = &cobra.Command{
 		dbName, _ := cmd.Flags().GetString("name")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				rdsSnapshotInfoSlice := helper.GetRDSSnapshots(dbName, rdsType, r, out)
+				rdsSnapshotInfoSlice := helpers.GetRDSSnapshots(dbName, rdsType, r, out)
 				if out != "json" {
-					helper.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
+					helpers.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
 				}
 			}
 			return
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		rdsSnapshotInfoSlice := helper.GetRDSSnapshots(dbName, rdsType, region, out)
+		rdsSnapshotInfoSlice := helpers.GetRDSSnapshots(dbName, rdsType, region, out)
 		if out != "json" {
-			helper.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
+			helpers.PrintRdsSnapshotInformation(rdsSnapshotInfoSlice, region, out)
 		}
 	},
 }
 
 func init() {
 	getRdsSnapshots.Flags().StringP("name", "n", "", "resourceId name")
+	getRdsSnapshots.Flags().StringP("type", "t", "instance", "instance/cluster")
 }

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +12,7 @@ var getAcmCertCmd = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				getCertifcateInformation(r)
 			}
@@ -21,7 +21,7 @@ var getAcmCertCmd = &cobra.Command{
 
 		// No region arg passed
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 		getCertifcateInformation(region)
 
@@ -30,11 +30,11 @@ var getAcmCertCmd = &cobra.Command{
 
 func getCertifcateInformation(region string) {
 	// Get all certificates
-	certificateList := helper.GetAcmCertificates(region)
+	certificateList := helpers.GetAcmCertificates(region)
 
 	// Get each certificate information
 	for _, certificate := range certificateList {
-		certificateInfo := helper.DescribeAcmCertificate(region, *certificate.CertificateArn)
-		helper.CheckCertificateStatus(certificateInfo, region)
+		certificateInfo := helpers.DescribeAcmCertificate(region, *certificate.CertificateArn)
+		helpers.CheckCertificateStatus(certificateInfo, region)
 	}
 }

@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/omerh/awsctl/pkg/helper"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +20,7 @@ var cmdCloudwatch = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				locateNeverExpireCloudwatchlogs(r, retention, apply)
 			}
@@ -29,7 +28,7 @@ var cmdCloudwatch = &cobra.Command{
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 		locateNeverExpireCloudwatchlogs(region, retention, apply)
 	},
@@ -37,7 +36,7 @@ var cmdCloudwatch = &cobra.Command{
 
 func locateNeverExpireCloudwatchlogs(region string, retention int64, apply bool) {
 	log.Printf("Running on region: %v", region)
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := cloudwatchlogs.New(awsSession)
 
 	// default empty input beofre retriving next tokens
@@ -93,7 +92,7 @@ func locateNeverExpireCloudwatchlogs(region string, retention int64, apply bool)
 		}
 	}
 
-	// helper.GetAwsServiceCost()
+	// helpers.GetAwsServiceCost()
 
 	if noRetentionSet == true {
 		log.Printf("Region %s total log size:", region)

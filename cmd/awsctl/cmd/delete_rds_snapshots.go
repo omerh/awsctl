@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -17,22 +17,22 @@ var deleteRdsSnapshots = &cobra.Command{
 		older, _ := cmd.Flags().GetInt("older")
 		apply, _ := cmd.Flags().GetBool("yes")
 
-		var rdsSnapshot []helper.RdsSnapshotInfo
+		var rdsSnapshot []helpers.RdsSnapshotInfo
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				rdsSnapshot = helper.GetRDSSnapshots(dbName, rdsType, r, out)
-				helper.DeleteRdsSnapshots(rdsSnapshot, older, r, apply, rdsType, out)
+				rdsSnapshot = helpers.GetRDSSnapshots(dbName, rdsType, r, out)
+				helpers.DeleteRdsSnapshots(rdsSnapshot, older, r, apply, rdsType, out)
 			}
 			return
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		rdsSnapshot = helper.GetRDSSnapshots(dbName, rdsType, region, out)
-		helper.DeleteRdsSnapshots(rdsSnapshot, older, region, apply, rdsType, out)
+		rdsSnapshot = helpers.GetRDSSnapshots(dbName, rdsType, region, out)
+		helpers.DeleteRdsSnapshots(rdsSnapshot, older, region, apply, rdsType, out)
 	},
 }
 
@@ -40,4 +40,5 @@ func init() {
 	deleteRdsSnapshots.Flags().Int("older", 365, "snapshot older than n days")
 	deleteRdsSnapshots.MarkFlagRequired("older")
 	deleteRdsSnapshots.Flags().StringP("name", "n", "", "resourceId name")
+	deleteRdsSnapshots.Flags().StringP("type", "t", "instance", "instance/cluster")
 }

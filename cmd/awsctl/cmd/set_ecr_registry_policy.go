@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -18,9 +18,9 @@ var setEcrRegistryPolicyCmd = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				repos := helper.GetECRRepositories(r)
+				repos := helpers.GetECRRepositories(r)
 				checkAndSetEcrSliceLifecyclePolicy(repos, retention, r, apply)
 			}
 			return
@@ -28,21 +28,21 @@ var setEcrRegistryPolicyCmd = &cobra.Command{
 
 		// No region arg passed
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		repos := helper.GetECRRepositories(region)
+		repos := helpers.GetECRRepositories(region)
 		checkAndSetEcrSliceLifecyclePolicy(repos, retention, region, apply)
 	},
 }
 
 func checkAndSetEcrSliceLifecyclePolicy(repos []*ecr.Repository, retention int, region string, apply bool) {
 	for _, repo := range repos {
-		policySet := helper.CheckECRRepositoryLifecyclePolicy(*repo.RepositoryName, region)
+		policySet := helpers.CheckECRRepositoryLifecyclePolicy(*repo.RepositoryName, region)
 		if policySet == false {
 			// Need to set lifecycle policy
 			if apply == true {
-				helper.SetEcrRepositoryLifecyclePolicy(*repo.RepositoryName, retention, region)
+				helpers.SetEcrRepositoryLifecyclePolicy(*repo.RepositoryName, retention, region)
 			} else {
 				log.Printf("Will set retention to %v for %v days, pass --yes to execute the command", *repo.RepositoryName, retention)
 			}

@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/omerh/awsctl/pkg/hooks"
 	"github.com/omerh/awsctl/pkg/outputs"
 	"github.com/spf13/cobra"
@@ -14,7 +14,7 @@ var getAzsCmd = &cobra.Command{
 	Short: "Get all azs in a region",
 	Run: func(cmd *cobra.Command, Args []string) {
 		region, _ := cmd.Flags().GetString("region")
-		azs, _ := helper.GetAllAwsAzs(region)
+		azs, _ := helpers.GetAllAwsAzs(region)
 		out, _ := cmd.Flags().GetString("out")
 		slack, _ := cmd.Flags().GetBool("slack")
 

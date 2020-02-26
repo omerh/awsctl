@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -14,18 +14,18 @@ var getEc2Events = &cobra.Command{
 		out, _ := cmd.Flags().GetString("out")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				helper.GetAllEc2Events(r, out)
+				helpers.GetAllEc2Events(r, out)
 			}
 			return
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		helper.GetAllEc2Events(region, out)
+		helpers.GetAllEc2Events(region, out)
 	},
 }
 

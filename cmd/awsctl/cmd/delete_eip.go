@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +23,7 @@ var cmdEip = &cobra.Command{
 			return
 		}
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				manageElasticIPAddresses(r, release)
 			}
@@ -31,7 +31,7 @@ var cmdEip = &cobra.Command{
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
 		manageElasticIPAddresses(region, release)
@@ -40,7 +40,7 @@ var cmdEip = &cobra.Command{
 
 func manageElasticIPAddresses(region string, release bool) {
 	log.Printf("Running on region: %v", region)
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := ec2.New(awsSession)
 
 	input := &ec2.DescribeAddressesInput{}

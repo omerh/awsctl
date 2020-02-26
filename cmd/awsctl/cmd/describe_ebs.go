@@ -5,7 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/omerh/awsctl/pkg/outputs"
 	"github.com/spf13/cobra"
 )
@@ -19,7 +19,7 @@ var describeEbsCmd = &cobra.Command{
 		out, _ := cmd.Flags().GetString("out")
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
 		describeEbsVolumeByID(volumeID, region, out)
@@ -35,7 +35,7 @@ func init() {
 }
 
 func describeEbsVolumeByID(volumeID string, region string, out string) {
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := ec2.New(awsSession)
 
 	awsVolumeFilters := []*ec2.Filter{

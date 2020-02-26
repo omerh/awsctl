@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -15,9 +15,9 @@ var cmdDeleteEcrImages = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				repos := helper.GetECRRepositories(r)
+				repos := helpers.GetECRRepositories(r)
 				getEcrImagesAndDeleteOld(repos, region, keep, apply)
 			}
 			return
@@ -25,10 +25,10 @@ var cmdDeleteEcrImages = &cobra.Command{
 
 		// No region arg passed
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		repos := helper.GetECRRepositories(region)
+		repos := helpers.GetECRRepositories(region)
 		getEcrImagesAndDeleteOld(repos, region, keep, apply)
 	},
 }
@@ -40,6 +40,6 @@ func init() {
 
 func getEcrImagesAndDeleteOld(repos []*ecr.Repository, region string, keep int, apply bool) {
 	for _, repo := range repos {
-		helper.EcrDeleteOldImageBuildsAndKeep(*repo.RepositoryName, region, keep)
+		helpers.EcrDeleteOldImageBuildsAndKeep(*repo.RepositoryName, region, keep)
 	}
 }

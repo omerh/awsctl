@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -13,17 +13,17 @@ var deleteAcmCertCmd = &cobra.Command{
 		apply, _ := cmd.Flags().GetBool("yes")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				helper.DeleteUnusedAcmCertificates(r, apply)
+				helpers.DeleteUnusedAcmCertificates(r, apply)
 			}
 			return
 		}
 
 		// No region arg passed
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
-		helper.DeleteUnusedAcmCertificates(region, apply)
+		helpers.DeleteUnusedAcmCertificates(region, apply)
 	},
 }

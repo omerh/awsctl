@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/omerh/awsctl/pkg/outputs"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,7 @@ var getEbsEncryptionCmd = &cobra.Command{
 		out, _ := cmd.Flags().GetString("out")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				getEbsEncryption(r, encryptionFilter, out)
 			}
@@ -29,7 +29,7 @@ var getEbsEncryptionCmd = &cobra.Command{
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
 		getEbsEncryption(region, encryptionFilter, out)
@@ -41,7 +41,7 @@ func init() {
 }
 
 func getEbsEncryption(region string, encryptionFilter string, out string) {
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := ec2.New(awsSession)
 
 	encryptionFilterString := string(encryptionFilter)

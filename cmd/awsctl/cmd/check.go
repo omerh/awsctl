@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,7 @@ var cmdCheck = &cobra.Command{
 			region = "missing"
 		}
 
-		t := helper.GetAwsServiceCost()
+		t := helpers.GetAwsServiceCost()
 
 		log.Println(&t)
 

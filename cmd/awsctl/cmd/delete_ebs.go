@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,7 +19,7 @@ var cmdEbs = &cobra.Command{
 		region, _ := cmd.Flags().GetString("region")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				seekAvailableVolumes(r, delete, filter)
 			}
@@ -27,7 +27,7 @@ var cmdEbs = &cobra.Command{
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
 		seekAvailableVolumes(region, delete, filter)
@@ -40,7 +40,7 @@ func init() {
 
 func seekAvailableVolumes(region string, delete bool, filter string) {
 	log.Printf("Running on region: %v", region)
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := ec2.New(awsSession)
 
 	awsVolumeFilters := []*ec2.Filter{

@@ -7,7 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -34,13 +34,13 @@ var cmdCreateEbs = &cobra.Command{
 
 		if az == "" || !strings.Contains(az, region) {
 			fmt.Println("EBS Avialability Zone must be declared")
-			azs, _ := helper.GetAllAwsAzs(region)
+			azs, _ := helpers.GetAllAwsAzs(region)
 			fmt.Printf("Possible azs are %v", azs)
 			return
 		}
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				createEbsVolumes(r, size, count, create, az, volumeType)
 			}
@@ -48,7 +48,7 @@ var cmdCreateEbs = &cobra.Command{
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
 		createEbsVolumes(region, size, count, create, az, volumeType)
@@ -67,7 +67,7 @@ func init() {
 
 func createEbsVolumes(region string, size int64, count int, create bool, az string, volumeType string) {
 	log.Printf("Running on region: %v", region)
-	awsSession, _ := helper.InitAwsSession(region)
+	awsSession, _ := helpers.InitAwsSession(region)
 	svc := ec2.New(awsSession)
 
 	input := &ec2.CreateVolumeInput{

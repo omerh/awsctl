@@ -24,10 +24,13 @@ var setCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(setCmd)
+	// Commands
 	setCmd.AddCommand(cmdCloudwatch)
 	setCmd.AddCommand(setEcrRegistryPolicyCmd)
 	setCmd.AddCommand(setEcrScanOnPushcmd)
+	setCmd.AddCommand((cmdCloudwatchAlarm))
+
+	// Flags
 	setCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to execute")
 	setCmd.PersistentFlags().Int64("retention", 14, "Retention in days")
 }

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/omerh/awsctl/pkg/helper"
+	"github.com/omerh/awsctl/pkg/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -20,17 +20,21 @@ var getRdsCmd = &cobra.Command{
 		rdsType, _ := cmd.Flags().GetString("type")
 
 		if region == "all" {
-			awsRegions, _ := helper.GetAllAwsRegions()
+			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
-				helper.GetAllRds(r, rdsType, out)
+				helpers.GetAllRds(r, rdsType, out)
 			}
 			return
 		}
 
 		if region == "" {
-			region = helper.GetDefaultAwsRegion()
+			region = helpers.GetDefaultAwsRegion()
 		}
 
-		helper.GetAllRds(region, rdsType, out)
+		helpers.GetAllRds(region, rdsType, out)
 	},
+}
+
+func init() {
+	getRdsCmd.Flags().StringP("type", "t", "instance", "instance/cluster")
 }
