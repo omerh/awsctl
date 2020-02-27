@@ -1,8 +1,6 @@
 package helpers
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/service/lambda"
 )
 
@@ -30,7 +28,6 @@ func GetAllLmbdasInRegion(region string, arn string) []*lambda.FunctionConfigura
 	if len(arn) > 0 {
 		for _, l := range lambdas {
 			if *l.FunctionArn == arn {
-				fmt.Println("match")
 				lambdas = nil
 				lambdas = append(lambdas, l)
 				return lambdas

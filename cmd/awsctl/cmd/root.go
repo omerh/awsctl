@@ -38,6 +38,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	// Commands
 	rootCmd.AddCommand(setCmd)
+	rootCmd.AddCommand(getCmd)
 
 	// Flags
 	rootCmd.PersistentFlags().StringP("region", "r", "", "aws region/all")

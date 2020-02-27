@@ -77,6 +77,21 @@ awsctl get certificates --region ue-east-1    # Get all expiring and expired cer
 awsctl delete certificates --region all --yes # Delete all unused certificates from the account
 ```
 
+Cloudwatch Alarms
+
+>Currently tested on `Errors` metric for lambda
+
+```bash
+# Single lambda
+set cloudwatchalarm --resource lambda --metric errors --region eu-west-2 --arn arn:aws:lambda:eu-west-2:000000000000:function:test --threshold 3 --action arn:aws:sns:eu-west-2:000000000000:SNSToSlack --yes
+
+# All lambdas
+set cloudwatchalarm --resource lambda --metric errors --region eu-west-2 --threshold 3 --action arn:aws:sns:eu-west-2:000000000000:SNSToSlack --yes
+
+# All lambdas in all regions
+set cloudwatchalarm --resource lambda --metric errors --region all --threshold 3 --action arn:aws:sns:eu-west-2:000000000000:SNSToSlack --yes
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing

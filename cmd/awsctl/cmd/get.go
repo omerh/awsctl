@@ -29,5 +29,5 @@ func init() {
 	getCmd.AddCommand(getRdsCmd)
 	getCmd.AddCommand(getRdsSnapshots)
 	getCmd.AddCommand(getAcmCertCmd)
-	rootCmd.AddCommand(getCmd)
+	getCmd.AddCommand(getCloudwatchAlarmCmd)
 }
