@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
@@ -28,7 +27,7 @@ var cmdCloudwatchAlarm = &cobra.Command{
 		if resource == "lambda" {
 			namespace = "AWS/Lambda"
 		} else {
-			fmt.Println("Currently support only resource type lambda")
+			log.Println("Currently support only resource type lambda")
 			return
 		}
 
@@ -38,7 +37,7 @@ var cmdCloudwatchAlarm = &cobra.Command{
 			// } else if metric == "latency" {
 			// metricName = "Latency"
 		} else {
-			fmt.Println("Currently supporting metrics: errors")
+			log.Println("Currently supporting metrics: errors")
 		}
 
 		// Start function
@@ -85,7 +84,7 @@ func init() {
 func checkIfLambdaAlarmExistsInCloudwatch(alarms []*cloudwatch.MetricAlarm, lambda *lambda.FunctionConfiguration, metricName string) bool {
 	for _, a := range alarms {
 		if *a.Dimensions[0].Value == *lambda.FunctionName && *a.MetricName == metricName {
-			fmt.Printf("Lambda alarm for %v on metric %v already exists\n", *lambda.FunctionName, metricName)
+			log.Printf("Lambda alarm for %v on metric %v already exists\n", *lambda.FunctionName, metricName)
 			return true
 		}
 	}
@@ -110,7 +109,7 @@ func checkOrCreateCloudwatchAlarm(alarms []*cloudwatch.MetricAlarm, lambdasSlice
 				helpers.CreateLambdaCloudwatchAlarm(region, *l.FunctionName, metricName, namespace, threshold, action)
 				log.Printf("Alarm was created for %v on metric %v", *l.FunctionName, metricName)
 			} else {
-				fmt.Printf("Pass --yes for creating the monitoring alarm")
+				log.Printf("Pass --yes to set monitoring alarm on lambda: %v", *l.FunctionName)
 			}
 		}
 	}
