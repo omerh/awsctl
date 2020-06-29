@@ -92,6 +92,12 @@ awsctl set cloudwatchalarm --resource lambda --metric errors --region eu-west-2 
 awsctl set cloudwatchalarm --resource lambda --metric errors --region all --threshold 3 --action arn:aws:sns:eu-west-2:000000000000:SNSToSlack --yes
 ```
 
+Delete network interfaces
+
+```bash
+awsctl delete ni --region eu-west-2 --filter available --yes
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing
