@@ -28,8 +28,3 @@ var getEc2Events = &cobra.Command{
 		helpers.GetAllEc2Events(region, out)
 	},
 }
-
-// func init() {
-// 	getEc2Events.Flags().StringP("region", "r", "us-east-1", "Aws region")
-// 	getEc2Events.MarkFlagRequired("region")
-// }
