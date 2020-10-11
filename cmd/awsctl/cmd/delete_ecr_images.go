@@ -40,6 +40,14 @@ func init() {
 
 func getEcrImagesAndDeleteOld(repos []*ecr.Repository, region string, keep int, apply bool) {
 	for _, repo := range repos {
-		helpers.EcrDeleteOldImageBuildsAndKeep(*repo.RepositoryName, region, keep)
+		imageDetails, deleteImages := helpers.EcrDescribeImages(*repo.RepositoryName, region, keep)
+		if deleteImages > 0 {
+			// needs to be deleted
+			var digest []string
+			for _, imageDetail := range imageDetails {
+				digest = append(digest, *imageDetail.ImageDigest)
+			}
+			helpers.DeleteEcrImages(*repo.RepositoryName, digest, region, apply)
+		}
 	}
 }

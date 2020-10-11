@@ -39,6 +39,7 @@ func init() {
 	// Commands
 	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(scanCmd)
 
 	// Flags
 	rootCmd.PersistentFlags().StringP("region", "r", "", "aws region/all")
