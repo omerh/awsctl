@@ -30,4 +30,5 @@ func init() {
 	getCmd.AddCommand(getRdsSnapshots)
 	getCmd.AddCommand(getAcmCertCmd)
 	getCmd.AddCommand(getCloudwatchAlarmCmd)
+	getCmd.AddCommand(getRiCmd)
 }

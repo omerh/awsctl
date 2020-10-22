@@ -104,6 +104,12 @@ Delete old ECR images in a region or in all regions
 awsctl delete ecr -r eu-west-2 --keep 20 --yes # This will keep 20 newest images for all repositories in the region
 ```
 
+Get simple reservation status on all of your regions
+
+```bash
+awsctl get ri -r all
+```
+
 For any missing action please open an issue for a feature request.
 
 ### Contributing
