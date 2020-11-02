@@ -50,8 +50,18 @@ func generateRIreport(region string) (map[string]int64, map[string]int64) {
 func utilizationReport(ri map[string]int64, ec2 map[string]int64, region string) {
 	fmt.Printf("Reservation status in %v (Only for running instances)\n", region)
 	fmt.Println("=================================================================")
-	for instanceType, instanceCount := range ec2 {
-		fmt.Printf("- You have %v %v with a resevation of %v\n", instanceCount, instanceType, ri[instanceType])
+
+	for instanceType, instanceCount := range ri {
+		util := utilization(ec2[instanceType], instanceCount)
+		fmt.Printf("- You have %v %v instances with %v active resevation, utilizing %v %% of reserved instances\n", ec2[instanceType], instanceType, instanceCount, util)
 	}
 	fmt.Println()
+}
+
+func utilization(instanceCount int64, riCount int64) int {
+	if instanceCount >= riCount {
+		return 100
+	}
+	util := int(float64(instanceCount) / float64(riCount) * 100)
+	return util
 }
