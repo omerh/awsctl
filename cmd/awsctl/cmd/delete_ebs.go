@@ -66,9 +66,10 @@ func seekAvailableVolumes(region string, delete bool, filter string) {
 			Filters:   awsVolumeFilters,
 		}
 		result, _ = svc.DescribeVolumes(input)
-		for _, volume := range result.Volumes {
-			availableVolumeList = append(availableVolumeList, volume)
-		}
+		// for _, volume := range result.Volumes {
+		// 	availableVolumeList = append(availableVolumeList, volume)
+		// }
+		availableVolumeList = append(availableVolumeList, result.Volumes...)
 	}
 
 	// Filtering out volumes
