@@ -39,8 +39,16 @@ func getAllRDSDBInstances(region string, out string) {
 		// DBInstanceIdentifier: aws.String("smorgasbord"),
 	}
 	rdsInstances, _ := svc.DescribeDBInstances(input)
+	var rdsFilteredInstances []*rds.DBInstance
 
-	printRdsInstances(rdsInstances.DBInstances, region, out)
+	for _, rds := range rdsInstances.DBInstances {
+		if *rds.Engine != "neptune" {
+			rdsFilteredInstances = append(rdsFilteredInstances, rds)
+		}
+
+	}
+	// printRdsInstances(rdsInstances.DBInstances, region, out)
+	printRdsInstances(rdsFilteredInstances, region, out)
 }
 
 func printRdsInstances(rdsInstances []*rds.DBInstance, region string, out string) {
