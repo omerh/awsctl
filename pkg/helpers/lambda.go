@@ -4,8 +4,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 )
 
-// GetAllLmbdasInRegion List all lambdas in a region
-func GetAllLmbdasInRegion(region string, arn string) []*lambda.FunctionConfiguration {
+// GetAllLambdaInRegion List all lambdas in a region
+func GetAllLambdaInRegion(region string, arn string) []*lambda.FunctionConfiguration {
 	awsSession, _ := InitAwsSession(region)
 	svc := lambda.New(awsSession)
 	input := &lambda.ListFunctionsInput{}

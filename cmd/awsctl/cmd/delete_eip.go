@@ -12,9 +12,9 @@ import (
 
 var cmdEip = &cobra.Command{
 	Use:   "eip [region]",
-	Short: "Relese unused elastic ip",
+	Short: "Release unused elastic ip",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Commnadline arguments
+		// Command line arguments
 		release, _ := cmd.Flags().GetBool("yes")
 		region, err := cmd.Flags().GetString("region")
 
@@ -50,10 +50,10 @@ func manageElasticIPAddresses(region string, release bool) {
 	for _, address := range result.Addresses {
 		if address.AssociationId == nil {
 			keep := checkKeepAddressTag(address)
-			if keep == true {
+			if keep {
 				log.Printf("IP Address %s tag was set to keep", *address.PublicIp)
 			} else {
-				if release == true {
+				if release {
 					input := &ec2.ReleaseAddressInput{
 						AllocationId: aws.String(*address.AllocationId),
 					}

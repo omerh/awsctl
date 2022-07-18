@@ -36,7 +36,7 @@ var setEcrScanOnPushcmd = &cobra.Command{
 
 func setEcrRepositoryConfigurationScanOnPush(repos []*ecr.Repository, scanOnPush bool, region string, apply bool) {
 	for _, repo := range repos {
-		if apply == true {
+		if apply {
 			helpers.SetEcrRepoImageScanOnPush(*repo.RepositoryName, region, scanOnPush)
 		} else {
 			log.Printf("will set scanOnPush to %v for repository %v, pass --yes to execute the command", scanOnPush, *repo.RepositoryName)

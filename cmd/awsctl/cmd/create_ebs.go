@@ -33,7 +33,7 @@ var cmdCreateEbs = &cobra.Command{
 		}
 
 		if az == "" || !strings.Contains(az, region) {
-			fmt.Println("EBS Avialability Zone must be declared")
+			fmt.Println("EBS Availability Zone must be declared")
 			azs, _ := helpers.GetAllAwsAzs(region)
 			fmt.Printf("Possible azs are %v", azs)
 			return
@@ -62,7 +62,7 @@ func init() {
 	cmdCreateEbs.MarkFlagRequired("count")
 	cmdCreateEbs.Flags().StringP("availability-zone", "z", "", "Availability zone")
 	cmdCreateEbs.MarkFlagRequired("availability-zone")
-	cmdCreateEbs.Flags().StringP("volume-type", "t", "gp2", "EBS Volume type (gp2,io1,st1,sc1,standart)")
+	cmdCreateEbs.Flags().StringP("volume-type", "t", "gp2", "EBS Volume type (gp2,io1,st1,sc1,standard)")
 }
 
 func createEbsVolumes(region string, size int64, count int, create bool, az string, volumeType string) {
@@ -77,7 +77,7 @@ func createEbsVolumes(region string, size int64, count int, create bool, az stri
 	}
 
 	for i := 0; i < count; i++ {
-		if create == true {
+		if create {
 			result, err := svc.CreateVolume(input)
 			if err != nil {
 				log.Println(err)

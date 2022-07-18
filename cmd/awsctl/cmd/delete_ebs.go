@@ -80,7 +80,7 @@ func seekAvailableVolumes(region string, delete bool, filter string) {
 	for _, volume := range availableVolumeList {
 		if volume.Tags != nil {
 			keep := checkVolumeKeepTag(volume)
-			if keep == true {
+			if keep {
 				log.Printf("Volume %s tag was tagged to keep", *volume.VolumeId)
 			} else {
 				filteredVolumeList = append(filteredVolumeList, *volume.VolumeId)
@@ -101,7 +101,7 @@ func seekAvailableVolumes(region string, delete bool, filter string) {
 	// Delete ebs volumes
 	if len(filteredVolumeList) > 0 {
 		for _, volume := range filteredVolumeList {
-			if delete == true {
+			if delete {
 				log.Printf("Deleting volume %v", volume)
 				input := &ec2.DeleteVolumeInput{
 					VolumeId: aws.String(volume),

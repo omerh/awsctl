@@ -28,7 +28,7 @@ var getAzsCmd = &cobra.Command{
 				fmt.Println(az)
 			}
 		}
-		if slack == true {
+		if slack {
 			hooks.SendSlackWebhook("testing slack")
 		}
 	},

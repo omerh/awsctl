@@ -49,7 +49,7 @@ var cmdCloudwatchAlarm = &cobra.Command{
 				// Filtered alarms according to the namespace of the alarms
 				alarms := filterCloudwatchAlarmsForNamespace(allAlarms, namespace)
 				// All lambdas in a region
-				lambdasSlice := helpers.GetAllLmbdasInRegion(r, arn)
+				lambdasSlice := helpers.GetAllLambdaInRegion(r, arn)
 				checkOrCreateCloudwatchAlarm(alarms, lambdasSlice, metricName, namespace, threshold, action, r, apply)
 			}
 			return
@@ -64,7 +64,7 @@ var cmdCloudwatchAlarm = &cobra.Command{
 		// Filtered alarms according to the namespace of the alarms
 		alarms := filterCloudwatchAlarmsForNamespace(allAlarms, namespace)
 		// All lambdas in a region
-		lambdasSlice := helpers.GetAllLmbdasInRegion(region, arn)
+		lambdasSlice := helpers.GetAllLambdaInRegion(region, arn)
 		checkOrCreateCloudwatchAlarm(alarms, lambdasSlice, metricName, namespace, threshold, action, region, apply)
 	},
 }

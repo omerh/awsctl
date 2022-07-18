@@ -39,9 +39,9 @@ var setEcrRegistryPolicyCmd = &cobra.Command{
 func checkAndSetEcrSliceLifecyclePolicy(repos []*ecr.Repository, retention int, region string, apply bool) {
 	for _, repo := range repos {
 		policySet := helpers.CheckECRRepositoryLifecyclePolicy(*repo.RepositoryName, region)
-		if policySet == false {
+		if !policySet {
 			// Need to set lifecycle policy
-			if apply == true {
+			if apply {
 				helpers.SetEcrRepositoryLifecyclePolicy(*repo.RepositoryName, retention, region)
 			} else {
 				log.Printf("Will set retention to %v for %v days, pass --yes to execute the command", *repo.RepositoryName, retention)

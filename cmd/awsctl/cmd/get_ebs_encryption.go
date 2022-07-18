@@ -80,7 +80,7 @@ func getEbsEncryption(region string, encryptionFilter string, out string) {
 		for _, ebs := range result.Volumes {
 			log.Println("-----------------------------------------------------------------------------------")
 			if ebs.Attachments != nil {
-				if *ebs.Encrypted == true {
+				if *ebs.Encrypted {
 					log.Printf("Found Ebs %v with encryption set to %v", *ebs.VolumeId, *ebs.Encrypted)
 					log.Printf("with the key: %v", *ebs.KmsKeyId)
 					log.Printf("Its attached to %v", *ebs.Attachments[0].InstanceId)
@@ -90,7 +90,7 @@ func getEbsEncryption(region string, encryptionFilter string, out string) {
 					log.Println("You have a running instance with no disk encryption")
 				}
 			} else {
-				if *ebs.Encrypted == true {
+				if *ebs.Encrypted {
 					log.Printf("Found Ebs %v with encryption set to %v", *ebs.VolumeId, *ebs.Encrypted)
 					log.Printf("with the key: %v", *ebs.KmsKeyId)
 				} else {
