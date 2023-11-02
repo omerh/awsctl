@@ -9,7 +9,7 @@ import (
 
 var awsSession *session.Session
 
-// InitAwsSession initlize aws session
+// InitAwsSession initialize aws session
 func InitAwsSession(region string) (*session.Session, error) {
 
 	config := aws.NewConfig().WithRegion(region)
@@ -18,7 +18,7 @@ func InitAwsSession(region string) (*session.Session, error) {
 	awsSession, err := session.NewSession(config)
 
 	if err != nil {
-		return nil, fmt.Errorf("Error starting a new AWS session: %v", err)
+		return nil, fmt.Errorf("error starting a new AWS session: %v", err)
 	}
 
 	return awsSession, nil

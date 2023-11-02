@@ -17,7 +17,7 @@ type acmCertificate struct {
 	domainName     string
 }
 
-// GetAcmCertificates retrives all certificates
+// GetAcmCertificates retrieves all certificates
 func GetAcmCertificates(region string) []*acm.CertificateSummary {
 	log.Printf("Running on region: %v", region)
 	awsSession, _ := InitAwsSession(region)
@@ -29,7 +29,7 @@ func GetAcmCertificates(region string) []*acm.CertificateSummary {
 	}
 	certificateSlice := result.CertificateSummaryList
 
-	// iterate over NextToken to retrive all
+	// iterate over NextToken to retrieve all
 	for result.NextToken != nil {
 		input := &acm.ListCertificatesInput{
 			NextToken: result.NextToken,
@@ -115,23 +115,23 @@ func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region strin
 			recordConfigured = CheckIfRecoredSetValueInRoute53(url, value, hostedZoneID, region)
 		}
 
-		// Check if dns recored resolves
+		// Check if dns record resolves
 		cname, err := net.LookupCNAME(url)
 		if err != nil {
-			if recordConfigured == true {
+			if recordConfigured {
 				log.Printf("AWS Certificate CNAME %v does not resolves, but configured in route53, check your registrar", url)
 			} else {
 				log.Printf("AWS Certificate CNAME %v does not resolves and setup ok in route53, verify that domain is in your posetion and NS are pointing to AWS route53", url)
 			}
 			log.Println(err)
 		} else if cname == value {
-			if recordConfigured == true {
+			if recordConfigured {
 				log.Printf("CNAME resolves ok and SSL recored setup correct, check aws console")
 			} else {
 				log.Println("CNAME resolves ok, domain is not in route53, check with domain registrar")
 			}
 		} else if cname != value {
-			if recordConfigured == true {
+			if recordConfigured {
 				log.Printf("CNAME %v resolves to the wrong recored %v instead of %v", url, cname, value)
 			} else {
 				log.Printf("CNAME %v resolves to the wrong recored %v instead of %v, but not in route53. Fix record in your registrar", url, cname, value)

@@ -3,9 +3,9 @@ module github.com/omerh/awsctl
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go v1.44.332
+	github.com/aws/aws-sdk-go v1.47.1
 	github.com/spf13/cobra v1.7.0
-	golang.org/x/net v0.14.0
+	golang.org/x/net v0.17.0
 )
 
 require (

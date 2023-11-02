@@ -54,7 +54,7 @@ func SetCloudwatchGroupsExpiry(region string, retention int64, cloudwatchGroups 
 		if group.RetentionInDays == nil || override {
 			totalLogByteSize = totalLogByteSize + *group.StoredBytes
 			noRetentionSet = true
-			if apply {
+			if apply && override {
 				// set input filter
 				input := &cloudwatchlogs.PutRetentionPolicyInput{
 					LogGroupName:    aws.String(*group.LogGroupName),
