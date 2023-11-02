@@ -13,13 +13,14 @@ var cmdCloudwatch = &cobra.Command{
 		apply, _ := cmd.Flags().GetBool("yes")
 		retention, _ := cmd.Flags().GetInt64("retention")
 		region, _ := cmd.Flags().GetString("region")
+		override, _ := cmd.Flags().GetBool("override")
 
 		if region == "all" {
 			awsRegions, _ := helpers.GetAllAwsRegions()
 			for _, r := range awsRegions {
 				// locateNeverExpireCloudwatchlogs(r, retention, apply)
 				cloudwatchGroups := helpers.GetCloudwatchGroups(r)
-				helpers.SetCloudwatchGroupsExpiry(r, retention, cloudwatchGroups, apply)
+				helpers.SetCloudwatchGroupsExpiry(r, retention, cloudwatchGroups, apply, override)
 			}
 			return
 		}
@@ -28,6 +29,6 @@ var cmdCloudwatch = &cobra.Command{
 			region = helpers.GetDefaultAwsRegion()
 		}
 		cloudwatchGroups := helpers.GetCloudwatchGroups(region)
-		helpers.SetCloudwatchGroupsExpiry(region, retention, cloudwatchGroups, apply)
+		helpers.SetCloudwatchGroupsExpiry(region, retention, cloudwatchGroups, apply, override)
 	},
 }

@@ -32,5 +32,6 @@ func init() {
 
 	// Flags
 	setCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to execute")
+	setCmd.PersistentFlags().Bool("override", false, "Specify --override to for cloudwatch override")
 	setCmd.PersistentFlags().Int64("retention", 14, "Retention in days")
 }
