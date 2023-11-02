@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-var allAzs []string
+// var allAzs []string
 
 // GetAllAwsAzs retrieval all available azs in a region
 func GetAllAwsAzs(region string) (azs []string, err error) {

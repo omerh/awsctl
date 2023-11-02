@@ -12,10 +12,10 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-type acmCertificate struct {
-	certificateArn string
-	domainName     string
-}
+// type acmCertificate struct {
+// 	certificateArn string
+// 	domainName     string
+// }
 
 // GetAcmCertificates retrieves all certificates
 func GetAcmCertificates(region string) []*acm.CertificateSummary {
@@ -34,10 +34,12 @@ func GetAcmCertificates(region string) []*acm.CertificateSummary {
 		input := &acm.ListCertificatesInput{
 			NextToken: result.NextToken,
 		}
+
 		result, _ = svc.ListCertificates(input)
-		for _, certificate := range result.CertificateSummaryList {
-			certificateSlice = append(certificateSlice, certificate)
-		}
+		// for _, certificate := range result.CertificateSummaryList {
+		// 	certificateSlice = append(certificateSlice, certificate)
+		// }
+		certificateSlice = append(certificateSlice, result.CertificateSummaryList...)
 	}
 
 	return certificateSlice
@@ -85,7 +87,7 @@ func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region strin
 		return
 	}
 
-	// Check validation methud
+	// Check validation method
 	if *certificate.Certificate.DomainValidationOptions[0].ValidationMethod == "EMAIL" {
 		awsSession, _ := InitAwsSession(region)
 		svc := acm.New(awsSession)
@@ -121,7 +123,7 @@ func analyzeCertificate(certificate *acm.DescribeCertificateOutput, region strin
 			if recordConfigured {
 				log.Printf("AWS Certificate CNAME %v does not resolves, but configured in route53, check your registrar", url)
 			} else {
-				log.Printf("AWS Certificate CNAME %v does not resolves and setup ok in route53, verify that domain is in your posetion and NS are pointing to AWS route53", url)
+				log.Printf("AWS Certificate CNAME %v does not resolves and setup ok in route53, verify that domain is in your position and NS are pointing to AWS route53", url)
 			}
 			log.Println(err)
 		} else if cname == value {

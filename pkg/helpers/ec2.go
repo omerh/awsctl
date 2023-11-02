@@ -21,7 +21,6 @@ type Ec2Event struct {
 }
 
 // GetAllEc2Events will check for all events
-//
 func GetAllEc2Events(region string, out string) {
 	input := &ec2.DescribeInstanceStatusInput{}
 	config := aws.NewConfig().WithRegion(region)
@@ -34,12 +33,12 @@ func GetAllEc2Events(region string, out string) {
 	svc := ec2.New(sess, config)
 	result, _ := svc.DescribeInstanceStatus(input)
 
-	var ec2evnets []Ec2Event
+	var ec2events []Ec2Event
 
 	for _, instance := range result.InstanceStatuses {
 		for _, event := range instance.Events {
 			if event.Code != nil {
-				ec2evnets = append(ec2evnets, Ec2Event{
+				ec2events = append(ec2events, Ec2Event{
 					instanceID:       *instance.InstanceId,
 					eventStatusCode:  *event.Code,
 					eventDescription: *event.Description,
@@ -49,21 +48,21 @@ func GetAllEc2Events(region string, out string) {
 		}
 	}
 
-	printEc2Events(ec2evnets, out, region)
+	printEc2Events(ec2events, out, region)
 }
 
-func printEc2Events(ec2evnets []Ec2Event, out string, region string) {
+func printEc2Events(ec2events []Ec2Event, out string, region string) {
 	switch out {
 	case "json":
-		// fmt.Println(ec2evnets)
-		outputs.PrintGenericJSONOutput(ec2evnets, region)
+		// fmt.Println(ec2events)
+		outputs.PrintGenericJSONOutput(ec2events, region)
 	default:
 		log.Printf("Running on region: %v", region)
-		if len(ec2evnets) > 0 {
-			for _, ec2evnet := range ec2evnets {
-				log.Printf("Instance %v has event %v", ec2evnet.instanceID, ec2evnet.eventStatusCode)
-				log.Printf("Description: %v", ec2evnet.eventDescription)
-				log.Printf("Handle until: %v", ec2evnet.eventDueDate)
+		if len(ec2events) > 0 {
+			for _, ec2event := range ec2events {
+				log.Printf("Instance %v has event %v", ec2event.instanceID, ec2event.eventStatusCode)
+				log.Printf("Description: %v", ec2event.eventDescription)
+				log.Printf("Handle until: %v", ec2event.eventDueDate)
 			}
 		} else {
 			log.Println("None found for region")
@@ -110,9 +109,10 @@ func GetAllEC2Instances(region string, lifeCycle string, state string) []*ec2.Re
 			NextToken: result.NextToken,
 		}
 		result, _ = svc.DescribeInstances(input)
-		for _, r := range result.Reservations {
-			ec2Slice = append(ec2Slice, r)
-		}
+		// for _, r := range result.Reservations {
+		// 	ec2Slice = append(ec2Slice, r)
+		// }
+		ec2Slice = append(ec2Slice, result.Reservations...)
 	}
 
 	if lifeCycle == "all" {
@@ -135,8 +135,8 @@ func GetAllEC2Instances(region string, lifeCycle string, state string) []*ec2.Re
 	return filteredEC2Slice
 }
 
-// SummeriesEC2Instances summarieses into map instances by type and count them
-func SummeriesEC2Instances(ec2Slice []*ec2.Reservation) map[string]int64 {
+// SummariesEC2Instances summarizes into map instances by type and count them
+func SummariesEC2Instances(ec2Slice []*ec2.Reservation) map[string]int64 {
 	summary := make(map[string]int64, len(ec2Slice))
 	for _, i := range ec2Slice {
 		c := summary[*i.Instances[0].InstanceType]

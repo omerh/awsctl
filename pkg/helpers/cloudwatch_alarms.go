@@ -20,9 +20,10 @@ func ListCloudwatchAlarms(region string) []*cloudwatch.MetricAlarm {
 			NextToken: result.NextToken,
 		}
 		result, _ = svc.DescribeAlarms(input)
-		for _, c := range result.MetricAlarms {
-			cloudwatchAlarms = append(cloudwatchAlarms, c)
-		}
+		// for _, c := range result.MetricAlarms {
+		// 	cloudwatchAlarms = append(cloudwatchAlarms, c)
+		// }
+		cloudwatchAlarms = append(cloudwatchAlarms, result.MetricAlarms...)
 	}
 
 	return cloudwatchAlarms

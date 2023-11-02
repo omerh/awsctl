@@ -26,7 +26,7 @@ type rawAmazonCloudWatchTerm struct {
 	TermAttributes  map[string]string
 }
 
-// GetAwsServiceCost use to get a prouct code for getting price
+// GetAwsServiceCost use to get a product code for getting price
 //
 func GetAwsServiceCost() *pricing.GetProductsOutput {
 	log.Println("Cost")

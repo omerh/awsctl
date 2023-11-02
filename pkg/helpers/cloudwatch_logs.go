@@ -15,7 +15,7 @@ func GetCloudwatchGroups(region string) []*cloudwatchlogs.LogGroup {
 	awsSession, _ := InitAwsSession(region)
 	svc := cloudwatchlogs.New(awsSession)
 
-	// default empty input beofre retriving next tokens
+	// default empty input before retrieving next tokens
 	input := &cloudwatchlogs.DescribeLogGroupsInput{}
 	// get all cloudwatch log groups
 	result, err := svc.DescribeLogGroups(input)
@@ -36,9 +36,10 @@ func GetCloudwatchGroups(region string) []*cloudwatchlogs.LogGroup {
 			log.Println(err)
 			os.Exit(1)
 		}
-		for _, group := range result.LogGroups {
-			cloudwatchGroups = append(cloudwatchGroups, group)
-		}
+		// for _, group := range result.LogGroups {
+		// 	cloudwatchGroups = append(cloudwatchGroups, group)
+		// }
+		cloudwatchGroups = append(cloudwatchGroups, result.LogGroups...)
 	}
 	return cloudwatchGroups
 }
