@@ -19,9 +19,7 @@ func GetAllLambdaInRegion(region string, arn string) []*lambda.FunctionConfigura
 			Marker: result.NextMarker,
 		}
 		result, _ = svc.ListFunctions(input)
-		for _, l := range result.Functions {
-			lambdas = append(lambdas, l)
-		}
+		lambdas = append(lambdas, result.Functions...)
 	}
 
 	// Filter out lambda

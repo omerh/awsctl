@@ -94,13 +94,13 @@ func GetRDSSnapshots(resourceName string, rdsType string, region string, out str
 	switch rdsType {
 	case "instance":
 		var response []*rds.DBSnapshot
-		rdsSnapshotInfoSlice, response = getRdsInstanceSnapshot(resourceName, region, out)
+		rdsSnapshotInfoSlice, response = getRdsInstanceSnapshot(resourceName, region)
 		if out == "json" {
 			outputs.PrintGenericJSONOutput(response, region)
 		}
 	case "cluster":
 		var response []*rds.DBClusterSnapshot
-		rdsSnapshotInfoSlice, response = getRdsDBClusterSnapshot(resourceName, region, out)
+		rdsSnapshotInfoSlice, response = getRdsDBClusterSnapshot(resourceName, region)
 		if out == "json" {
 			outputs.PrintGenericJSONOutput(response, region)
 		}
@@ -110,7 +110,7 @@ func GetRDSSnapshots(resourceName string, rdsType string, region string, out str
 	return rdsSnapshotInfoSlice
 }
 
-func getRdsDBClusterSnapshot(resourceName string, region string, out string) ([]RdsSnapshotInfo, []*rds.DBClusterSnapshot) {
+func getRdsDBClusterSnapshot(resourceName string, region string) ([]RdsSnapshotInfo, []*rds.DBClusterSnapshot) {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBClusterSnapshotsInput
@@ -155,7 +155,7 @@ func PrintRdsSnapshotInformation(rdsSnapshotInformation []RdsSnapshotInfo, regio
 	log.Println("==============================================")
 }
 
-func getRdsInstanceSnapshot(resourceName string, region string, out string) ([]RdsSnapshotInfo, []*rds.DBSnapshot) {
+func getRdsInstanceSnapshot(resourceName string, region string) ([]RdsSnapshotInfo, []*rds.DBSnapshot) {
 	awsSession, _ := InitAwsSession(region)
 	svc := rds.New(awsSession)
 	var input *rds.DescribeDBSnapshotsInput
@@ -225,7 +225,7 @@ func DeleteRdsSnapshots(rdsSnapshots []RdsSnapshotInfo, older int, region string
 	for _, s := range rdsSnapshots {
 		if s.snapshotCreatedTime.Before(deleteDate) {
 			log.Printf("Deleting %v that was created at %v for db %v", s.dbSnapshotIdentifier, s.snapshotCreatedTime, s.dbIdentifier)
-			if apply == true {
+			if apply {
 				deleteSnapshot(s.dbSnapshotIdentifier, region, rdsType)
 			} else {
 				log.Println("Add -y/--yes to confirm delete")

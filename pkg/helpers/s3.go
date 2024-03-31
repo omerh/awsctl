@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-// GetAllS3Buckets retrives all the buckets in a region
+// GetAllS3Buckets retrieves all the buckets in a region
 func GetAllS3Buckets() []*s3.Bucket {
 	awsSession, _ := InitAwsSession("us-east-1")
 	svc := s3.New(awsSession)
@@ -17,7 +17,7 @@ func GetAllS3Buckets() []*s3.Bucket {
 	return result.Buckets
 }
 
-// CheckBucketEncryption check if bucket encription is set
+// CheckBucketEncryption check if bucket encryption is set
 func CheckBucketEncryption(bucket string, region string) bool {
 	awsSession, _ := InitAwsSession(region)
 	svc := s3.New(awsSession)
@@ -28,11 +28,12 @@ func CheckBucketEncryption(bucket string, region string) bool {
 	_, err := svc.GetBucketEncryption(input)
 	if err != nil {
 		// The server side encryption configuration was not found
-		// log.Printf("Error getting bucket encryption\n%v\n", err)
-		return false
+		log.Printf("Error getting bucket encryption\n%v\n", err)
+		// return false
 	}
 	// fmt.Println(result)
-	return true
+	return err == nil
+
 }
 
 // GetS3BucketLocation get a bucket region
@@ -54,8 +55,8 @@ func GetS3BucketLocation(bucket string) string {
 	return *result.LocationConstraint
 }
 
-// GetS3PuclicAccess get public access to s3 bucket
-func GetS3PuclicAccess(bucket string, region string) {
+// GetS3PublicAccess get public access to s3 bucket
+func GetS3PublicAccess(bucket string, region string) {
 	awsSession, _ := InitAwsSession(region)
 	svc := s3.New(awsSession)
 	input := &s3.GetBucketAclInput{

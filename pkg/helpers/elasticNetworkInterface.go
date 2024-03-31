@@ -36,9 +36,7 @@ func GetAllElasticNetworkInterfaces(region string, filter string) []*ec2.Network
 			Filters:   networkInterfaceFilter,
 		}
 		result, _ = svc.DescribeNetworkInterfaces(input)
-		for _, n := range result.NetworkInterfaces {
-			networkInterfacesSlice = append(networkInterfacesSlice, n)
-		}
+		networkInterfacesSlice = append(networkInterfacesSlice, result.NetworkInterfaces...)
 	}
 
 	return networkInterfacesSlice
@@ -60,7 +58,7 @@ func DeleteNetworkInterface(region string, networkInterfaceID string, apply bool
 		}
 		_, err = svc.DeleteNetworkInterface(input)
 		if err != nil {
-			log.Printf("There was a problme deleting network interface\n%v", err)
+			log.Printf("There was a problem deleting network interface\n%v", err)
 			return false
 		}
 	}

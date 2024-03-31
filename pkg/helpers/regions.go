@@ -12,7 +12,7 @@ import (
 
 var allRegions []string
 
-// GetAllAwsRegions will retrive all aws regions
+// GetAllAwsRegions will retrieve all aws regions
 //
 func GetAllAwsRegions() ([]string, error) {
 	// log.Println("Getting all regions...")
@@ -24,14 +24,14 @@ func GetAllAwsRegions() ([]string, error) {
 	config := aws.NewConfig().WithRegion(awsRegion)
 	sess, err := session.NewSession(config)
 	if err != nil {
-		return allRegions, fmt.Errorf("Error starting a new AWS session: %v", err)
+		return allRegions, fmt.Errorf("error starting a new AWS session: %v", err)
 	}
 
 	client := ec2.New(sess, config)
 
 	response, err := client.DescribeRegions(request)
 	if err != nil {
-		return allRegions, fmt.Errorf("Got an error while querying for valid regions (verify your AWS credentials?): %v", err)
+		return allRegions, fmt.Errorf("got an error while querying for valid regions (verify your AWS credentials?): %v", err)
 	}
 
 	for _, region := range response.Regions {
@@ -41,7 +41,7 @@ func GetAllAwsRegions() ([]string, error) {
 	return allRegions, nil
 }
 
-// GetDefaultAwsRegion resolve deafult region
+// GetDefaultAwsRegion resolve default region
 //
 func GetDefaultAwsRegion() (region string) {
 	region = os.Getenv("AWS_REGION")

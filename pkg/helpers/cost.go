@@ -8,23 +8,23 @@ import (
 	"github.com/aws/aws-sdk-go/service/pricing"
 )
 
-type rawAmazonCloudWatch struct {
-	FormatVersion   string
-	Disclaimer      string
-	OfferCode       string
-	Version         string
-	PublicationDate string
-	Products        map[string]string
-	Terms           map[string]map[string]map[string]rawAmazonCloudWatchTerm
-}
+// type rawAmazonCloudWatch struct {
+// 	FormatVersion   string
+// 	Disclaimer      string
+// 	OfferCode       string
+// 	Version         string
+// 	PublicationDate string
+// 	Products        map[string]string
+// 	Terms           map[string]map[string]map[string]rawAmazonCloudWatchTerm
+// }
 
-type rawAmazonCloudWatchTerm struct {
-	OfferTermCode   string
-	Sku             string
-	EffectiveDate   string
-	PriceDimensions map[string]string
-	TermAttributes  map[string]string
-}
+// type rawAmazonCloudWatchTerm struct {
+// 	OfferTermCode   string
+// 	Sku             string
+// 	EffectiveDate   string
+// 	PriceDimensions map[string]string
+// 	TermAttributes  map[string]string
+// }
 
 // GetAwsServiceCost use to get a product code for getting price
 //

@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
-var awsSession *session.Session
+// var awsSession *session.Session
 
 // InitAwsSession initialize aws session
 func InitAwsSession(region string) (*session.Session, error) {

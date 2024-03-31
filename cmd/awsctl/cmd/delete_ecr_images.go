@@ -47,6 +47,7 @@ func getEcrImagesAndDeleteOld(repos []*ecr.Repository, region string, keep int, 
 			for _, imageDetail := range imageDetails {
 				digest = append(digest, *imageDetail.ImageDigest)
 			}
+			// log.Printf("%v", digest)
 			helpers.DeleteEcrImages(*repo.RepositoryName, digest, region, apply)
 		}
 	}

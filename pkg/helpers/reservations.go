@@ -5,12 +5,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-type riSummary struct {
-	instanceType  string
-	instanceCount int
-}
+// type riSummary struct {
+// 	instanceType  string
+// 	instanceCount int
+// }
 
-// GetAllReservations retrive all reservations
+// GetAllReservations retrieve all reservations
 func GetAllReservations(region string, state string) map[string]int64 {
 	awsSession, _ := InitAwsSession(region)
 	svc := ec2.New(awsSession)
@@ -28,11 +28,11 @@ func GetAllReservations(region string, state string) map[string]int64 {
 	}
 
 	result, _ := svc.DescribeReservedInstances(input)
-	summaryResult := summeriesRI(result)
+	summaryResult := summariesRI(result)
 	return summaryResult
 }
 
-func summeriesRI(ri *ec2.DescribeReservedInstancesOutput) map[string]int64 {
+func summariesRI(ri *ec2.DescribeReservedInstancesOutput) map[string]int64 {
 	summary := make(map[string]int64, len(ri.ReservedInstances))
 	for _, r := range ri.ReservedInstances {
 		i := summary[*r.InstanceType]

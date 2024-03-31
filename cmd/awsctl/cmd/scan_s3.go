@@ -26,7 +26,7 @@ var scanS3 = &cobra.Command{
 			// get s3 server side encryption
 			encryptioSet := helpers.CheckBucketEncryption(*bucket.Name, region)
 			// get s3 public access
-			helpers.GetS3PuclicAccess(*bucket.Name, region)
+			helpers.GetS3PublicAccess(*bucket.Name, region)
 			bucket := s3bucket{
 				name:          *bucket.Name,
 				region:        region,

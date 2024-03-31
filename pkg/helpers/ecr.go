@@ -30,7 +30,7 @@ func GetECRRepositories(region string) []*ecr.Repository {
 	input := &ecr.DescribeRepositoriesInput{}
 	result, _ := svc.DescribeRepositories(input)
 
-	registeriesSlice := result.Repositories
+	registriesSlice := result.Repositories
 
 	// iterate over NextToken to retrive all repositories from Ecr in the region
 	for result.NextToken != nil {
@@ -38,11 +38,9 @@ func GetECRRepositories(region string) []*ecr.Repository {
 			NextToken: result.NextToken,
 		}
 		result, _ = svc.DescribeRepositories(input)
-		for _, registry := range result.Repositories {
-			registeriesSlice = append(registeriesSlice, registry)
-		}
+		registriesSlice = append(registriesSlice, result.Repositories...)
 	}
-	return registeriesSlice
+	return registriesSlice
 }
 
 // CheckECRRepositoryLifecyclePolicy for a repository in a region
@@ -55,11 +53,9 @@ func CheckECRRepositoryLifecyclePolicy(repositoryName string, region string) boo
 	_, err := svc.GetLifecyclePolicy(input)
 	if err != nil {
 		// Ecr lifecyclePolicy is not set
-		// log.Printf("error: %v", err)
-		return false
+		log.Printf("error: %v", err)
 	}
-
-	return true
+	return err == nil
 }
 
 // SetEcrRepositoryLifecyclePolicy set the life time policy
@@ -127,47 +123,44 @@ func EcrDescribeImages(repositoryName string, region string, keep int) ([]*ecr.I
 	}
 	result, _ := svc.DescribeImages(input)
 
-	iamgesDetailsSlice := result.ImageDetails
+	imagesDetailsSlice := result.ImageDetails
 
-	// iterate over NextToken to retrive all repositories from Ecr in the region
+	// iterate over NextToken to retrieve all repositories from Ecr in the region
 	for result.NextToken != nil {
 		input := &ecr.DescribeImagesInput{
 			RepositoryName: aws.String(repositoryName),
 			NextToken:      result.NextToken,
 		}
 		result, _ = svc.DescribeImages(input)
-		for _, imageDetails := range result.ImageDetails {
-			iamgesDetailsSlice = append(iamgesDetailsSlice, imageDetails)
-		}
+		imagesDetailsSlice = append(imagesDetailsSlice, result.ImageDetails...)
 	}
-	sortedImagesToDelete := sortEcrRepos(iamgesDetailsSlice, keep)
-	return sortedImagesToDelete, len(iamgesDetailsSlice) - len(sortedImagesToDelete)
+	sortedImagesToDelete := sortEcrRepos(imagesDetailsSlice, keep)
+	return sortedImagesToDelete, len(imagesDetailsSlice) - len(sortedImagesToDelete)
 }
 
 func sortEcrRepos(imagesDetail []*ecr.ImageDetail, keep int) []*ecr.ImageDetail {
-	iarr := ImageArr{}
-	iarr = imagesDetail
-	sort.Stable(iarr)
-	if len(iarr) > keep {
-		iarr = iarr[keep:]
+	var imageArray ImageArr = imagesDetail
+	sort.Stable(imageArray)
+	if len(imageArray) > keep {
+		imageArray = imageArray[keep:]
 	}
-	return iarr
+	return imageArray
 }
 
 // DeleteEcrImages delete according to image digest
 func DeleteEcrImages(repo string, digest []string, region string, apply bool) {
-	imgs := make([]*ecr.ImageIdentifier, len(digest))
+	images := make([]*ecr.ImageIdentifier, len(digest))
 
 	for k, v := range digest {
 		t := &ecr.ImageIdentifier{}
 		t.ImageDigest = aws.String(v)
-		imgs[k] = t
+		images[k] = t
 	}
 
 	bulk := 100
 
-	for i := 0; i < len(imgs); i += bulk {
-		batch := imgs[i:min(i+bulk, len(imgs))]
+	for i := 0; i < len(images); i += bulk {
+		batch := images[i:min(i+bulk, len(images))]
 		deleteImagesBatch(repo, region, batch, apply)
 	}
 }
@@ -179,21 +172,21 @@ func min(a, b int) int {
 	return b
 }
 
-func deleteImagesBatch(repo string, region string, imgs []*ecr.ImageIdentifier, apply bool) {
+func deleteImagesBatch(repo string, region string, images []*ecr.ImageIdentifier, apply bool) {
 	awsSession, _ := InitAwsSession(region)
 	svc := ecr.New(awsSession)
 	input := &ecr.BatchDeleteImageInput{
 		RepositoryName: aws.String(repo),
-		ImageIds:       imgs,
+		ImageIds:       images,
 	}
 
 	if apply {
-		fmt.Printf("Deleting bulk of %v images from repo %v\n", len(imgs), repo)
+		log.Printf("Repo: %v, deleting bulk of %v images\n", repo, len(images))
 		_, err := svc.BatchDeleteImage(input)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		fmt.Printf("Should delete %v images from repo %v, pass --yes to apply\n", len(imgs), repo)
+		log.Printf("Repo: %v, should delete %v images, pass --yes to apply\n", repo, len(images))
 	}
 }
