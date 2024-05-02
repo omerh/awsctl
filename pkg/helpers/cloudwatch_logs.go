@@ -44,6 +44,11 @@ func GetCloudwatchGroups(region string) []*cloudwatchlogs.LogGroup {
 	return cloudwatchGroups
 }
 
+func bytesToMB(bytes uint64) float64 {
+	const bytesInMB = 1024 * 1024
+	return float64(bytes) / float64(bytesInMB)
+}
+
 // SetCloudwatchGroupsExpiry Set expiry on a cloudwatch group
 func SetCloudwatchGroupsExpiry(region string, retention int64, cloudwatchGroups []*cloudwatchlogs.LogGroup, apply bool, override bool) {
 	awsSession, _ := InitAwsSession(region)
@@ -75,7 +80,9 @@ func SetCloudwatchGroupsExpiry(region string, retention int64, cloudwatchGroups 
 	}
 	if noRetentionSet {
 		log.Printf("Region %s total log size:", region)
-		log.Printf("Total log size in with no retention policy is: %v bytes", totalLogByteSize)
+		totalLogByteSizeInMB := bytesToMB(uint64(totalLogByteSize))
+		// log.Println(totalLogByteSize)
+		log.Printf("Total log size in with no retention policy is: %.2f MB", totalLogByteSizeInMB)
 	}
 
 	fmt.Println("=====================================================================================================")
