@@ -16,3 +16,6 @@ vendor
 dist
 
 /.git
+
+# Environment variables
+.env

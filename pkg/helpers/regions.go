@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
@@ -21,13 +19,14 @@ func GetAllAwsRegions() ([]string, error) {
 	if awsRegion == "" {
 		awsRegion = "us-east-1"
 	}
-	config := aws.NewConfig().WithRegion(awsRegion)
-	sess, err := session.NewSession(config)
+	
+	// Use the centralized session initialization that supports SSO
+	sess, err := InitAwsSession(awsRegion)
 	if err != nil {
 		return allRegions, fmt.Errorf("error starting a new AWS session: %v", err)
 	}
 
-	client := ec2.New(sess, config)
+	client := ec2.New(sess)
 
 	response, err := client.DescribeRegions(request)
 	if err != nil {

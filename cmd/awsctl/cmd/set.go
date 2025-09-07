@@ -31,7 +31,7 @@ func init() {
 	setCmd.AddCommand((cmdCloudwatchAlarm))
 
 	// Flags
-	setCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to execute")
-	setCmd.PersistentFlags().Bool("override", false, "Specify --override to for cloudwatch override")
+	setCmd.PersistentFlags().BoolP("yes", "y", false, "Specify --yes to apply the changes")
+	setCmd.PersistentFlags().Bool("overwrite", false, "Specify --overwrite to overwrite existing retention policy")
 	setCmd.PersistentFlags().Int64("retention", 14, "Retention in days")
 }
