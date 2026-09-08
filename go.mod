@@ -1,14 +1,12 @@
 module github.com/omerh/awsctl
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/aws/aws-sdk-go v1.55.8
 	github.com/joho/godotenv v1.5.1
-	github.com/spf13/cobra v1.10.1
-	golang.org/x/net v0.43.0
+	github.com/spf13/cobra v1.10.2
+	golang.org/x/net v0.58.0
 )
 
 require (
